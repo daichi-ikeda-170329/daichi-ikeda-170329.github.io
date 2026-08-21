@@ -85,10 +85,26 @@ function pickNext(book, books, stages, exclude, max = 6) {
 }
 
 /** 書影の URL 候補。Amazon が提供する商品画像 URL を参照する（保存・加工はしない） */
-function coverUrl(b) {
-  if (b.cover) return b.cover;
+/**
+ * 書影の候補 URL を優先順に返す。
+ *
+ * Amazon は画像を持たない ISBN に対して 43 バイトほどの 1x1 画像を
+ * HTTP 200 で返すことがある。この場合 onerror は発火しないので、
+ * 表示側で naturalWidth を見て次の候補へ送る（科目ページと同じ方式）。
+ */
+function coverSrcs(b) {
   const key = b.isbn10 || b.asin;
-  return key ? `https://images-fe.ssl-images-amazon.com/images/P/${key}.09.LZZZZZZZ.jpg` : '';
+  const list = [];
+  if (b.cover) list.push(b.cover);
+  if (key) {
+    list.push(`https://images-fe.ssl-images-amazon.com/images/P/${key}.09.LZZZZZZZ.jpg`);
+    list.push(`https://images-na.ssl-images-amazon.com/images/P/${key}.09.LZZZZZZZ.jpg`);
+  }
+  if (b.isbn13) {
+    list.push(`https://ndlsearch.ndl.go.jp/thumbnail/${b.isbn13}.jpg`);
+    list.push(`https://cover.openbd.jp/${b.isbn13}.jpg`);
+  }
+  return list;
 }
 
 function amazonUrl(b, tag) {
@@ -139,7 +155,7 @@ function renderBook(book, ctx) {
   const url = `${ORIGIN}/${sub.dir}/books/${book.id}/`;
   const alts = pickAlternatives(book, books);
   const next = pickNext(book, books, stages, alts);
-  const cover = coverUrl(book);
+  const covers = coverSrcs(book);
   const az = amazonUrl(book, config.amazonTag);
   const rk = rakutenUrl(book, config.rakutenId);
   // 広告リンクかどうかは販売サイトごとに違う。ID が入っている側だけ
@@ -241,7 +257,7 @@ ${header(sub)}
     <div class="bk-hero">
       <div class="bk-cover">
         <div class="ph"><b>${esc(book.name)}</b><span>${esc(book.pub)}</span></div>
-        ${cover ? `<img src="${esc(cover)}" alt="${esc(book.name)}の表紙" width="186" height="260" loading="eager" onerror="this.remove()">` : ''}
+        ${covers.length ? `<img src="${esc(covers[0])}" alt="${esc(book.name)}の表紙" width="186" height="260" loading="eager" referrerpolicy="no-referrer" data-srcs="${esc(covers.join('|'))}" data-s="0" onload="if(this.naturalWidth&lt;=1)this.onerror()" onerror="var s=this.dataset.srcs.split('|'),n=+this.dataset.s+1;if(s.length&gt;n){this.dataset.s=n;this.src=s[n]}else{this.remove()}">` : ''}
       </div>
       <div>
         <span class="bk-tag"><i></i>${esc(st.label)}${subLabel ? ` — ${esc(subLabel)}` : ''}</span>
