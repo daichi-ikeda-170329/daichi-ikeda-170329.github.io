@@ -1,0 +1,102 @@
+/**
+ * 各科目の単一 HTML から、ページ生成に必要なデータを取り出す。
+ *
+ * 科目ページはビルド工程を持たない単一 HTML なので、データは <script> の中に
+ * リテラルとして書かれている。ここでは script を切り出して vm 上で実行し、
+ * DOM 依存の初期化処理はスタブで空振りさせたうえで、定数だけを回収する。
+ */
+import fs from 'fs';
+import path from 'path';
+import vm from 'vm';
+
+/** DOM API を「何を呼んでも落ちない」オブジェクトとして代替する */
+const stub = () => new Proxy(function () {}, {
+  get: (t, k) => (k === Symbol.toPrimitive ? () => '' : stub()),
+  set: () => true,
+  apply: () => stub(),
+  construct: () => stub(),
+});
+
+/** 科目ページが持つトップレベル定数。const のままだと vm の外から読めないので globalThis に移す */
+const WANTED = ['BOOKS', 'UNIS', 'TIERS', 'ROUTES', 'GUIDES', 'STAGES', 'CONFIG'];
+
+export function extractSubject(rootDir, dir) {
+  const file = path.join(rootDir, dir, 'index.html');
+  const src = fs.readFileSync(file, 'utf8');
+  const scripts = [...src.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*ld\+json)[^>]*>([\s\S]*?)<\/script>/g)]
+    .map(m => m[1]);
+
+  const ctx = {
+    console: { log() {}, warn() {}, error() {} },
+    document: stub(), window: stub(), localStorage: stub(), navigator: stub(),
+    setTimeout() {}, setInterval() {}, addEventListener() {}, requestAnimationFrame() {},
+  };
+  ctx.globalThis = ctx;
+  vm.createContext(ctx);
+
+  const re = new RegExp(`\\bconst (${WANTED.join('|')})\\s*=`, 'g');
+  for (const code of scripts) {
+    try {
+      vm.runInContext(code.replace(re, 'globalThis.$1 ='), ctx, { timeout: 30000 });
+    } catch {
+      // 初期化処理が DOM に触れて落ちるのは想定内。定数の定義はその前に済んでいる
+    }
+  }
+
+  const books = ctx.BOOKS;
+  if (!Array.isArray(books) || books.length === 0) {
+    throw new Error(`${dir}: BOOKS を取り出せなかった`);
+  }
+  const ids = books.map(b => b.id);
+  const dup = ids.filter((id, i) => ids.indexOf(id) !== i);
+  if (dup.length) throw new Error(`${dir}: id が重複している — ${[...new Set(dup)].join(', ')}`);
+  const badId = ids.filter(id => !/^[a-z0-9][a-z0-9_-]*$/i.test(id));
+  if (badId.length) throw new Error(`${dir}: URL に使えない id — ${badId.join(', ')}`);
+
+  return {
+    dir,
+    books,
+    stages: ctx.STAGES || {},
+    tiers: Array.isArray(ctx.TIERS) ? ctx.TIERS : [],
+    routes: ctx.ROUTES || {},
+    unis: Array.isArray(ctx.UNIS) ? ctx.UNIS : [],
+    guides: Array.isArray(ctx.GUIDES) ? ctx.GUIDES : [],
+  };
+}
+
+/** サイト共通の科目メタ情報。冊数は BOOKS から実測するのでここには持たない */
+export const SUBJECTS = [
+  { dir: 'english',  ja: '英語', mark: '英', en: 'ENGLISH',        color: '#B5432A',
+    full: '英語ルート大全', fields: '単語・文法・英文解釈・長文・英作文・リスニング' },
+  { dir: 'japanese', ja: '国語', mark: '国', en: 'JAPANESE',       color: '#8A6D2F',
+    full: '国語ルート大全', fields: '現代文・古文・漢文' },
+  { dir: 'math',     ja: '数学', mark: '数', en: 'MATHEMATICS',    color: '#24427C',
+    full: '数学ルート大全', fields: '数学I・A / II・B・C / III・C' },
+  { dir: 'science',  ja: '理科', mark: '理', en: 'SCIENCE',        color: '#2F6E4F',
+    full: '理科ルート大全', fields: '物理・化学・生物・地学' },
+  { dir: 'social',   ja: '社会', mark: '社', en: 'SOCIAL STUDIES', color: '#5B4E9E',
+    full: '社会ルート大全', fields: '日本史・世界史・地理・公民' },
+];
+
+export const ORIGIN = 'https://daichi-ikeda-170329.github.io';
+
+/** 分野コード（BOOKS[].sub）の表示名。科目をまたいで衝突しないので 1 つの辞書で足りる */
+export const SUB_LABELS = {
+  gendai: '現代文', kobun: '古文', koten: '古文', kanbun: '漢文', sogo: '総合',
+  butsuri: '物理', kagaku: '化学', seibutsu: '生物', chigaku: '地学',
+  nihonshi: '日本史', sekaishi: '世界史', chiri: '地理',
+  kokyo: '公共', seikei: '政治・経済', rinri: '倫理',
+};
+
+/** HTML に埋める文字列のエスケープ */
+export function esc(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+/** meta description / og:description 用。改行と連続空白を潰し、指定長で切る */
+export function clip(s, max) {
+  const t = String(s ?? '').replace(/\s+/g, ' ').trim();
+  return t.length <= max ? t : t.slice(0, max - 1) + '…';
+}

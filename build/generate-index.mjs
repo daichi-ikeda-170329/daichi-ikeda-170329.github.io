@@ -1,0 +1,158 @@
+/**
+ * 科目ごとの参考書一覧ページ（/<科目>/books/）を生成する。
+ *
+ * 個別ページ 1,052 件への内部リンクの起点になる。sitemap だけに載せた
+ * ページはクロールが遅れるため、たどれる一覧を必ず用意する。
+ */
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { extractSubject, SUBJECTS, SUB_LABELS, ORIGIN, esc, clip } from './lib/extract.mjs';
+import { head, topBars, header, crumbs, footer, jsonLd, breadcrumbLd } from './lib/parts.mjs';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+
+function bookRow(b, sub, stages) {
+  const st = stages[b.stage] || {};
+  const bars = Array.from({ length: 10 }, (_, i) => `<i class="${i < b.diff ? 'on' : ''}"></i>`).join('');
+  return `      <a class="bcard" href="/${sub.dir}/books/${b.id}/" style="--bc:${st.color || sub.color}">
+        <div class="bcard__top"><span class="bcard__stage">${esc(st.short || '')}</span><span>${esc(b.pub)}</span></div>
+        <b>${esc(b.name)}</b>
+        <p>${esc(clip(b.desc, 74))}</p>
+        <div class="bcard__foot"><span class="bcard__diff">${bars}</span><span>難易度 ${b.diff}／${esc(b.hensachi || '—')}</span></div>
+      </a>`;
+}
+
+function render(sub, d, counts) {
+  const url = `${ORIGIN}/${sub.dir}/books/`;
+  const n = d.books.length;
+  const stageKeys = Object.keys(d.stages).filter(k => d.books.some(b => b.stage === k));
+  const hasSub = d.books.some(b => b.sub);
+
+  const title = `${sub.ja}の参考書一覧${n}冊｜難易度・役割つき索引 - ${sub.full}`;
+  const desc = clip(`大学受験の${sub.ja}参考書${n}冊を、${stageKeys.map(k => d.stages[k].label).join('・')}の役割別に並べた索引。` +
+    `各冊のレベル・到達目安・向いている人・次に進む本を個別ページで確認できます。${sub.fields}に対応。2026年 新課程対応。`, 158);
+
+  const crumbItems = [
+    { name: 'ルート大全', url: '/', absUrl: `${ORIGIN}/` },
+    { name: sub.full, url: `/${sub.dir}/`, absUrl: `${ORIGIN}/${sub.dir}/` },
+    { name: '参考書一覧', url, absUrl: url },
+  ];
+
+  const sections = stageKeys.map(key => {
+    const st = d.stages[key];
+    const list = d.books.filter(b => b.stage === key).sort((a, b) => a.diff - b.diff);
+
+    // 分野（現代文・物理など）を持つ科目は、役割の中をさらに分野で仕切る
+    const groups = hasSub
+      ? [...new Set(list.map(b => b.sub || ''))].map(s => ({
+          label: s ? (SUB_LABELS[s] || s) : 'その他',
+          list: list.filter(b => (b.sub || '') === s),
+        }))
+      : [{ label: '', list }];
+
+    const body = groups.map(g => `${g.label ? `      <h3 class="grp">${esc(g.label)}<span>${g.list.length}冊</span></h3>\n` : ''}      <div class="bcards">
+${g.list.map(b => bookRow(b, sub, d.stages)).join('\n')}
+      </div>`).join('\n');
+
+    return `    <section class="block" id="stage-${key}">
+      <div class="eyebrow" style="color:${st.color}"><span style="display:none"></span>${esc(st.short)}</div>
+      <h2 class="sec">${esc(st.label)}<span class="cnt">${list.length}冊</span></h2>
+${body}
+    </section>`;
+  }).join('\n\n');
+
+  const nav = stageKeys.map(k =>
+    `      <a href="#stage-${k}" style="--nc:${d.stages[k].color}">${esc(d.stages[k].label)}<b>${d.books.filter(b => b.stage === k).length}</b></a>`
+  ).join('\n');
+
+  const ld = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      breadcrumbLd(crumbItems, `${url}#breadcrumb`),
+      {
+        '@type': 'CollectionPage',
+        '@id': `${url}#webpage`,
+        url, name: title, description: desc, inLanguage: 'ja',
+        isPartOf: { '@id': `${ORIGIN}/#website` },
+        breadcrumb: { '@id': `${url}#breadcrumb` },
+      },
+      {
+        '@type': 'ItemList',
+        name: `${sub.ja}の参考書一覧`,
+        numberOfItems: n,
+        itemListElement: d.books.map((b, i) => ({
+          '@type': 'ListItem', position: i + 1, name: b.name,
+          url: `${ORIGIN}/${sub.dir}/books/${b.id}/`,
+        })),
+      },
+    ],
+  };
+
+  return `<!DOCTYPE html>
+<html lang="ja">
+<head>
+${head({ title, desc, url, ogImage: `${ORIGIN}/assets/ogp-${sub.dir}.png` })}
+<style>
+:root{--sc:${sub.color}}
+h2.sec .cnt{font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:600;margin-left:12px;letter-spacing:.06em}
+h3.grp{font-family:var(--serif);font-weight:800;font-size:15px;letter-spacing:.04em;margin:24px 0 10px;display:flex;align-items:baseline;gap:10px;color:var(--ink-2)}
+h3.grp span{font-family:var(--mono);font-size:10.5px;color:var(--muted-2);font-weight:600}
+.stnav{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px}
+.stnav a{display:inline-flex;align-items:baseline;gap:7px;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--nc);padding:8px 13px;font-size:12.5px;font-weight:700;color:var(--ink-2);transition:.15s;box-shadow:var(--sh-s)}
+.stnav a:hover{transform:translateY(-2px);box-shadow:var(--sh-m)}
+.stnav a b{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:600}
+</style>
+</head>
+<body>
+
+${topBars(sub.dir)}
+
+${header(sub)}
+
+<main class="wrap">
+  ${crumbs(crumbItems)}
+
+  <div class="block" style="margin-top:26px">
+    <div class="eyebrow">Catalog index</div>
+    <h1 class="sec" style="font-size:29px">${esc(sub.ja)}の参考書一覧　${n}冊</h1>
+    <p class="sec-lead">${esc(sub.full)}に収録している${esc(sub.ja)}の参考書${n}冊を、役割別・難易度順に並べた索引です。各冊のページで、レベル・到達目安・向いている人・強みと注意点・次に進む本を確認できます。対象は${esc(sub.fields)}。</p>
+    <div class="stnav">
+${nav}
+    </div>
+  </div>
+
+${sections}
+
+  <div class="cta">
+    <h2>一覧から選ぶより、ルートから選ぶほうが速い</h2>
+    <p>${n}冊を上から順に検討する必要はありません。志望校と今の学力を入れると、この中を通る道だけが残ります。</p>
+    <div class="cta__btns">
+      <a class="p" href="/${sub.dir}/">${esc(sub.ja)}のルートを作る<svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a class="g" href="/">全科目を見る</a>
+    </div>
+  </div>
+</main>
+
+${footer(sub.dir, counts)}
+
+${jsonLd(ld)}
+
+</body>
+</html>
+`;
+}
+
+const data = {};
+const counts = {};
+for (const s of SUBJECTS) {
+  data[s.dir] = extractSubject(ROOT, s.dir);
+  counts[s.dir] = data[s.dir].books.length;
+}
+
+for (const sub of SUBJECTS) {
+  const outDir = path.join(ROOT, sub.dir, 'books');
+  fs.mkdirSync(outDir, { recursive: true });
+  fs.writeFileSync(path.join(outDir, 'index.html'), render(sub, data[sub.dir], counts));
+  console.log(`  ✓ ${sub.dir}/books/index.html  (${counts[sub.dir]}冊)`);
+}

@@ -157,6 +157,19 @@ h2.sec{font-family:var(--serif);font-weight:800;font-size:24px;letter-spacing:.0
 .subj:hover .subj__go svg{transform:translateX(3px)}
 .subj__go svg{transition:transform .16s}
 
+/* ---------- Book index ---------- */
+.idx-grid{display:grid;grid-template-columns:1fr;gap:9px;margin-top:22px}
+@media(min-width:700px){.idx-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.idx-grid{grid-template-columns:repeat(3,1fr)}}
+.idx-grid a{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--ic);padding:14px 16px;transition:.16s;box-shadow:var(--sh-s);min-width:0}
+.idx-grid a:hover{transform:translateY(-3px);box-shadow:var(--sh-m);border-color:var(--line-d);border-left-color:var(--ic)}
+.idx-mark{width:30px;height:30px;flex:none;display:grid;place-items:center;font-family:var(--serif);font-weight:800;font-size:15px;color:#fff;background:var(--ic);border-radius:3px}
+.idx-txt{min-width:0;line-height:1.35}
+.idx-txt b{display:block;font-size:13.5px;font-weight:700;letter-spacing:.02em}
+.idx-txt small{display:block;font-size:11px;color:var(--muted);margin-top:3px;font-weight:600;line-height:1.55}
+.idx-grid svg{width:15px;height:15px;flex:none;margin-left:auto;color:var(--ic);transition:transform .16s}
+.idx-grid a:hover svg{transform:translateX(3px)}
+
 /* ---------- Feature ---------- */
 .feat-grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:22px;box-shadow:var(--sh-s)}
 @media(min-width:820px){.feat-grid{grid-template-columns:repeat(3,1fr)}}
@@ -243,6 +256,7 @@ h2.sec{font-family:var(--serif);font-weight:800;font-size:24px;letter-spacing:.0
     </a>
     <nav class="nav-desktop">
       <a href="#subjects">科目から選ぶ</a>
+      <a href="#catalog">参考書から探す</a>
       <a href="#about">ルート大全とは</a>
       <a href="#howto">使い方</a>
       <a href="#faq">よくある質問</a>
@@ -395,6 +409,20 @@ h2.sec{font-family:var(--serif);font-weight:800;font-size:24px;letter-spacing:.0
         </div>
       </div>
 
+    </div>
+  </section>
+
+  <!-- ============ BOOK INDEX ============ -->
+  <section class="block" id="catalog">
+    <div class="eyebrow">Book index</div>
+    <h2 class="sec">参考書名から探す</h2>
+    <p class="sec-lead">気になっている本がもう決まっているなら、一覧から直接どうぞ。1 冊ごとに、レベル・到達目安・向いている人・強みと注意点・同じレベルの他の選択肢・次に進む本をまとめたページがあります。</p>
+    <div class="idx-grid">
+      <a href="/english/books/" style="--ic:#B5432A"><span class="idx-mark">英</span><span class="idx-txt"><b>英語の参考書一覧</b><small>173冊 — 単語・文法・解釈・長文・英作文</small></span><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a href="/japanese/books/" style="--ic:#8A6D2F"><span class="idx-mark">国</span><span class="idx-txt"><b>国語の参考書一覧</b><small>152冊 — 現代文・古文・漢文</small></span><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a href="/math/books/" style="--ic:#24427C"><span class="idx-mark">数</span><span class="idx-txt"><b>数学の参考書一覧</b><small>113冊 — 導入・網羅・標準・応用</small></span><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a href="/science/books/" style="--ic:#2F6E4F"><span class="idx-mark">理</span><span class="idx-txt"><b>理科の参考書一覧</b><small>347冊 — 物理・化学・生物・地学</small></span><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a href="/social/books/" style="--ic:#5B4E9E"><span class="idx-mark">社</span><span class="idx-txt"><b>社会の参考書一覧</b><small>267冊 — 日本史・世界史・地理・公民</small></span><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
   </section>
 

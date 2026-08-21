@@ -581,6 +581,22 @@ h2.sec{font-family:var(--serif);font-weight:800;font-size:24px;letter-spacing:.0
 .fs-txt{display:flex;flex-direction:column;line-height:1.25;min-width:0}
 .fs-txt b{font-size:12px;font-weight:700;letter-spacing:.03em;color:var(--ink)}
 .fs-txt span{font-family:var(--mono);font-size:9.5px;color:var(--muted-2);letter-spacing:.05em;margin-top:2px}
+
+/* ---------- 参考書の詳細ページへの導線 ---------- */
+.foot-links a{font-size:12px;font-weight:700;color:var(--ink-2);transition:.14s;text-decoration:none}
+.foot-links a:hover{color:var(--accent)}
+.detail-btn{display:flex;align-items:center;gap:11px;background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--indigo);padding:13px 15px;font-size:13px;font-weight:700;color:var(--ink);transition:.16s;text-decoration:none;line-height:1.5}
+.detail-btn:hover{background:var(--indigo-soft);border-color:var(--indigo);border-left-color:var(--indigo)}
+.detail-btn svg{width:15px;height:15px;flex:none;margin-left:auto;color:var(--indigo);transition:transform .16s}
+.detail-btn:hover svg{transform:translateX(3px)}
+.detail-btn small{color:var(--muted);font-weight:600;font-size:11.5px;display:block;margin-top:3px;line-height:1.6}
+.cat-index{display:flex;align-items:center;gap:13px;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);padding:15px 17px;margin-top:18px;box-shadow:var(--sh-s);transition:.16s;text-decoration:none}
+.cat-index:hover{transform:translateY(-2px);box-shadow:var(--sh-m);border-color:var(--line-d);border-left-color:var(--accent)}
+.cat-index__t{min-width:0}
+.cat-index__t b{display:block;font-size:13.5px;font-weight:700;letter-spacing:.02em;color:var(--ink)}
+.cat-index__t small{display:block;font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.6;font-weight:600}
+.cat-index svg{width:16px;height:16px;flex:none;margin-left:auto;color:var(--accent);transition:transform .16s}
+.cat-index:hover svg{transform:translateX(3px)}
 </style>
 </head>
 <body>
@@ -693,6 +709,13 @@ h2.sec{font-family:var(--serif);font-weight:800;font-size:24px;letter-spacing:.0
       <h2 class="sec">参考書図鑑</h2>
       <p class="sec-lead">教科書・図説・用語集から論述・過去問まで<span id="cat-lead-count">250</span>冊を収録。科目・段階・キーワードで自分に合う一冊を探せます。カードを選ぶと詳細へ。</p>
     </div>
+    <a class="cat-index" href="/social/books/">
+      <div class="cat-index__t">
+        <b>社会の参考書一覧 267冊（1冊ごとの詳細ページつき）</b>
+        <small>レベル・到達目安・向いている人・強みと注意点・次に進む本を1冊ずつまとめています</small>
+      </div>
+      <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
     <div class="cat-controls">
       <div class="search-wrap">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.2-3.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -869,6 +892,7 @@ h2.sec{font-family:var(--serif);font-weight:800;font-size:24px;letter-spacing:.0
   </div>
 
     <div class="foot-links">
+      <a href="/social/books/">参考書一覧</a>
       <button onclick="openLegal('about')">運営者情報</button>
       <button onclick="openLegal('privacy')">プライバシーポリシー</button>
       <button onclick="openLegal('disclaimer')">免責事項</button>
@@ -3839,6 +3863,11 @@ function openModal(id){
   }).join("");
   const az = amazonURL(b), rk = rakutenURL(b);
   const ext = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M14 4h6v6M20 4 10 14M9 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+  const detail = `<div class="mb-block"><h6>この参考書をもっと詳しく</h6>
+    <a class="detail-btn" href="/social/books/${b.id}/">
+      <span>「${b.name}」の詳細ページ<small>レベル・向いている人・同じレベルの他の選択肢・次に進む本</small></span>
+      <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a></div>`;
   const amazon = (az||rk) ? `<div class="mb-block"><h6>購入・詳細を見る</h6>
     <div class="aff-actions">
       ${az?`<a class="aff-btn amz" href="${az}" target="_blank" rel="nofollow sponsored noopener">Amazonで見る${ext}</a>`:""}
@@ -3875,6 +3904,7 @@ function openModal(id){
       <div class="mb-block"><h6>こんな人に</h6><p class="mb-desc">${b.bestFor}</p></div>
       <div class="mb-block"><h6>対象大学の目安</h6><div class="uni-tags">${(b.unis||[]).map(u=>`<span class="uni-tag">${u}</span>`).join("")}</div></div>
       ${(con.prev.length||con.next.length)?`<div class="mb-block"><h6>ルート上の接続</h6><div class="connect-row">${conRow(con.prev,"前に")}${conRow(con.next,"次に")}</div></div>`:""}
+      ${detail}
       ${amazon}
     </div>`;
   document.getElementById("bookModal").classList.add("open");
