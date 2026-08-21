@@ -37,6 +37,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://daichi-ikeda-170329.github.io/english/guides/chobun-comparison/</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://daichi-ikeda-170329.github.io/english/guides/kaishaku-comparison/</loc>
     <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
@@ -1166,6 +1172,12 @@
   </url>
   <url>
     <loc>https://daichi-ikeda-170329.github.io/japanese/guides/gendaibun-start/</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://daichi-ikeda-170329.github.io/japanese/guides/kobun-start/</loc>
     <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -2924,6 +2936,12 @@
   </url>
   <url>
     <loc>https://daichi-ikeda-170329.github.io/science/guides/butsuri-route/</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://daichi-ikeda-170329.github.io/science/guides/kagaku-route/</loc>
     <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -5084,6 +5102,12 @@
   </url>
   <url>
     <loc>https://daichi-ikeda-170329.github.io/social/guides/nihonshi-route/</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://daichi-ikeda-170329.github.io/social/guides/sekaishi-route/</loc>
     <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
