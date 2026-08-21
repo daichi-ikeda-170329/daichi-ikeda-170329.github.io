@@ -123,7 +123,9 @@ print(sorted(set(bad)) or 'リンク切れなし')
 
 ## アフィリエイト ID の設定
 
-各科目トップの `<script>` 冒頭にある `CONFIG` に ID を入れる。空文字のままなら通常のリンクとして動作する。
+広告表記は「ID が入っているかどうか」だけを根拠に自動で出し分ける。未参加のプログラムの表記を出さないため、**文言を手で書き換える必要はない**。
+
+ID は各科目トップと `index.html`（ポータル）の `<script>` 冒頭にある `CONFIG` に入れる。
 
 ```js
 const CONFIG = {
@@ -135,19 +137,43 @@ const CONFIG = {
 };
 ```
 
-- `amazonTag` を設定すると、フッターと「広告について」に Amazon アソシエイトの必須表記が自動で表示される。未設定のうちは表示されない（未参加の状態で参加者の表記を出さないため）
-- `rakutenId` を設定すると、書籍詳細に楽天ブックスのボタンが追加される
-- 生成ページのリンクにも同じ ID が使われる。**ID を入れたあとは必ず全ページを再生成する**
+どちらが設定済みかは「[外部サービスの登録状況](#外部サービスの登録状況)」を正本とする。
+
+### ID の有無で自動的に変わるもの
+
+`CONFIG` の 2 つの ID から `AFF_AZ` / `AFF_RK` / `AFF`（どちらか一方でも有効か）/ `AFF_PROGRAMS`（参加中のプログラム名）/ `AFF_STORES`（広告リンクになる販売サイト名）を組み立て、次の箇所が連動する。
+
+| 箇所 | 両方とも未設定 | 片方または両方が設定済み |
+|---|---|---|
+| ページ最上部の PR バー | 出さない | 出す |
+| 書籍の購入ボタンの `rel` | `nofollow noopener` | ID がある側だけ `sponsored` を追加 |
+| 購入ボタン下の注記 | 版の確認だけ | 広告リンクである販売サイト名を明記 |
+| 「広告について」 | 広告を掲載していない旨 | 参加中のプログラム名を明記 |
+| プライバシーポリシー | 広告クッキーの節を出さない | 広告クッキー・オプトアウトの節を出す |
+| フッターの法定表記 | 目安である旨だけ | アフィリエイト利用の明示を追加 |
+| Amazon アソシエイトの必須表記 | 出さない | `amazonTag` があるときだけ出す |
+
+生成ページ側は `build/lib/extract.mjs` の `affiliateEnabled()` が 5 科目の `CONFIG` を読んで同じ判定をする。**ID を入れたあとは必ず全ページを再生成する。**
+
+### Amazon アソシエイトが承認されたら
 
 ```bash
-# 5 科目へ一括反映する（ID は自分のものに置き換える）
+# 5 科目 + ポータルへ一括反映する（ID は自分のものに置き換える）
 for f in english japanese math science social; do
   sed -i '' 's/amazonTag:  ""/amazonTag:  "xxxxx-22"/' "$f/index.html"
 done
+sed -i '' 's/amazonTag: ""/amazonTag: "xxxxx-22"/' index.html
+
 node build/generate-books.mjs && node build/generate-index.mjs \
   && node build/generate-routes.mjs && node build/generate-articles.mjs \
   && node build/generate-sitemap.mjs
 ```
+
+反映後、次の 3 点を確認する。
+
+- 書籍詳細ページの「Amazon で見る」に `rel="nofollow sponsored noopener"` が付いている
+- フッターに「Amazon のアソシエイトとして、〜は適格販売により収入を得ています。」が出ている
+- 「広告について」から「Amazon へのリンクはアフィリエイトタグを含まない通常のリンク」の但し書きが消えている
 
 ## 更新手順
 
@@ -187,11 +213,11 @@ URL は `sitemap.xml` を正本にするので、先に `generate-sitemap.mjs` �
 | GitHub Pages | 有効 | ホスティング | — |
 | Google Search Console | 所有権確認メタ設置済み | インデックス登録・検索順位の把握 | ポータルと科目トップの `<head>` |
 | Google アナリティクス 4 | 導入済み（`G-DQ5WFXEFMX`） | アクセス解析 | 手書き HTML 7 件と `build/lib/parts.mjs` の `analytics()` |
-| 楽天アフィリエイト | 導入済み | 書籍リンクの収益化 | 科目トップの `CONFIG.rakutenId` |
-| Amazon アソシエイト | 未登録 | 書籍リンクの収益化 | 科目トップの `CONFIG.amazonTag` |
+| 楽天アフィリエイト | 導入済み | 書籍リンクの収益化 | 科目トップとポータルの `CONFIG.rakutenId` |
+| Amazon アソシエイト | 審査中 | 書籍リンクの収益化 | 科目トップとポータルの `CONFIG.amazonTag` |
 | IndexNow | 通知済み | Bing・Yahoo・DuckDuckGo・Yandex への即時インデックス通知 | サイト直下の `<キー>.txt` と `build/submit-indexnow.mjs` |
 | Bing Webmaster Tools | 未登録 | Bing の掲載状況の確認 | — |
 
-アフィリエイト ID が 1 つでも設定されていると、PR バー・広告注記・法定表記・`rel="sponsored"` が自動で表示される。すべて未設定なら表示されない（未参加の状態で参加者の表記を出さないため）。判定は `build/lib/extract.mjs` の `affiliateEnabled()` と、科目トップ内の `AFF` が担う。
+広告表記は ID の有無だけを根拠に自動で出し分ける。ID が入っている販売サイトだけを広告リンクとして扱い、もう一方はタグ無しの通常リンクとして扱う（未参加のプログラムの表記を出さないため）。詳細は「[アフィリエイト ID の設定](#アフィリエイト-id-の設定)」を参照。
 
 測定 ID を変えるときは、手書き HTML と `parts.mjs` の両方にあるので `rg G-DQ5WFXEFMX` で全箇所を出してから直す。

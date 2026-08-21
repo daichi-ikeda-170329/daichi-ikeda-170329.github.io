@@ -623,6 +623,8 @@ gtag('config', 'G-DQ5WFXEFMX');
 </head>
 <body>
 
+<div class="pr-bar" id="prBar">当サイトは<b>アフィリエイト広告</b>を利用しています。参考書の紹介リンクから購入された場合、当サイトに紹介料が発生することがあります。</div>
+
 <nav class="xbar" aria-label="科目切り替え">
   <div class="xbar__in">
     <a class="xbar__brand" href="https://daichi-ikeda-170329.github.io/">
@@ -993,8 +995,25 @@ const CONFIG = {
 /* アフィリエイト ID が未設定のうちは、広告表記を一切出さない（未参加の状態で
    参加者の表記を出さないため）。CONFIG に ID を入れると、PR バー・広告注記・
    法定表記・rel="sponsored" が自動で戻る。 */
-const AFF = Boolean(CONFIG.amazonTag || CONFIG.rakutenId);
-if (AFF) document.body.insertAdjacentHTML("afterbegin", `<div class="pr-bar">当サイトは<b>アフィリエイト広告</b>を利用しています。参考書の紹介リンクから購入された場合、当サイトに紹介料が発生することがあります。</div>`);
+/* 広告リンクかどうかは販売サイトごとに違う。ID が入っている側だけが広告リンクで、
+   もう一方はタグ無しの通常リンク（紹介料が発生しない）。未参加のプログラムを
+   名指ししないよう、法定表記の文言もここから組み立てる。 */
+const AFF_AZ = Boolean(CONFIG.amazonTag);
+const AFF_RK = Boolean(CONFIG.rakutenId);
+const AFF    = AFF_AZ || AFF_RK;
+
+const AFF_PROGRAMS = [
+  AFF_AZ ? "Amazonアソシエイト・プログラム" : null,
+  AFF_RK ? "楽天アフィリエイト" : null
+].filter(Boolean).join("および");
+
+/* 広告リンクになる販売サイトの表示名 */
+const AFF_STORES = [
+  AFF_AZ ? "Amazon" : null,
+  AFF_RK ? "楽天ブックス" : null
+].filter(Boolean).join("・");
+/* 表記は静的に置いてある。ID が未設定のときだけ取り除く（描画のズレを起こさないため） */
+if (!AFF) document.getElementById("prBar")?.remove();
 /* ============================================================
    DATA — 大学受験 理科 参考書データベース(2026 新課程)
    ISBNは出版社/書店DBで確認した最新版。表紙は書店DBの画像を使用し、
@@ -1118,8 +1137,8 @@ privacy:{title:"プライバシーポリシー",body:()=>`
 <h5>アクセス解析について</h5>
 <p>当サイトでは、利用状況の把握と改善のために Google LLC が提供する「Google アナリティクス」を利用しています。Google アナリティクスは Cookie を使用して、氏名・住所などの個人を特定する情報を含まない形で、閲覧されたページや滞在時間などのアクセス情報を収集します。</p>
 <p>収集された情報は Google 社のプライバシーポリシーに基づいて管理されます。データの収集を望まない場合は、Google が提供する「Google アナリティクス オプトアウト アドオン」を利用するか、お使いのブラウザの設定で Cookie を無効にすることで停止できます。</p>
-<h5>第三者配信の広告サービスについて</h5>
-<p>${CONFIG.amazonTag ? "当サイトは、Amazon.co.jpを宣伝しリンクすることによってサイトが紹介料を獲得できる手段を提供することを目的に設定されたアフィリエイトプログラムである、Amazonアソシエイト・プログラムの参加者です。また、その他の第三者配信の広告サービスを利用する場合があります。" : "当サイトは、第三者が提供するアフィリエイト・プログラムを利用しています。"}これらの広告配信事業者は、ユーザーの興味に応じた広告を表示するためにCookieを使用することがあります。</p>
+${AFF ? `<h5>第三者配信の広告サービスについて</h5>
+<p>当サイトは${AFF_PROGRAMS}に参加しています。これらの広告配信事業者は、広告の配信および成果の計測のために Cookie を使用することがあります。この際に取得される情報に、氏名・住所・メールアドレスなど個人を特定できる情報は含まれません。Cookie の使用はブラウザの設定により無効にできます。</p>` : ``}
 <h5>免責</h5>
 <p>当サイトの情報の利用により生じたいかなる損害についても、運営者は責任を負いかねます。</p>`},
 
@@ -1134,8 +1153,9 @@ disclaimer:{title:"免責事項",body:()=>`
 <p>当サイトからリンクやバナーなどによって他のサイトに移動された場合、移動先サイトで提供される情報・サービス等について一切の責任を負いません。</p>`},
 
 affiliate:{title:"広告について",body:()=>`
-<h5>アフィリエイトプログラムの利用</h5>
-<p>当サイトはアフィリエイト広告を利用しています。参考書の詳細画面に設置している「Amazonで見る」「楽天ブックスで見る」等のリンクは広告リンクであり、リンク経由で商品が購入された場合、当サイトに紹介料が発生することがあります。購入者が支払う価格に影響はありません。</p>
+${AFF ? `<h5>アフィリエイトプログラムの利用</h5>
+<p>当サイトは${AFF_PROGRAMS}に参加しています。参考書の詳細画面に設置している${AFF_STORES}へのリンクは広告リンクであり、リンク経由で商品が購入された場合、当サイトに紹介料が発生することがあります。購入者が支払う価格に影響はありません。${AFF_AZ ? "" : "なお、Amazonへのリンクはアフィリエイトタグを含まない通常のリンクであり、リンク経由の購入によって当サイトが紹介料を得ることはありません。"}</p>` : `<h5>広告の掲載について</h5>
+<p>当サイトは現在、アフィリエイトプログラムを含む広告を掲載していません。参考書の販売サイトへのリンクは書誌情報を確認していただくための通常のリンクであり、リンク経由の購入によって当サイトが収益を得ることはありません。</p>`}
 ${CONFIG.amazonTag ? `<h5>Amazonアソシエイト</h5>
 <p>${CONFIG.siteName}は、Amazon.co.jpを宣伝しリンクすることによってサイトが紹介料を獲得できる手段を提供することを目的に設定されたアフィリエイトプログラムである、Amazonアソシエイト・プログラムの参加者です。Amazonのアソシエイトとして、${CONFIG.siteName}は適格販売により収入を得ています。</p>` : ""}
 <h5>書影(表紙画像)について</h5>
@@ -1526,10 +1546,10 @@ function openModal(id){
     </a></div>`;
   const amazon = (az||rk) ? `<div class="mb-block"><h6>購入・詳細を見る</h6>
     <div class="aff-actions">
-      ${az?`<a class="aff-btn amz" href="${az}" target="_blank" rel="nofollow${AFF?' sponsored':''} noopener">Amazonで見る${ext}</a>`:""}
-      ${rk?`<a class="aff-btn rkt" href="${rk}" target="_blank" rel="nofollow${AFF?' sponsored':''} noopener">楽天ブックスで見る${ext}</a>`:""}
+      ${az?`<a class="aff-btn amz" href="${az}" target="_blank" rel="nofollow${AFF_AZ?' sponsored':''} noopener">Amazonで見る${ext}</a>`:""}
+      ${rk?`<a class="aff-btn rkt" href="${rk}" target="_blank" rel="nofollow${AFF_RK?' sponsored':''} noopener">楽天ブックスで見る${ext}</a>`:""}
     </div>
-    <p class="aff-note">${AFF?"上記は広告リンクです。リンク経由で購入された場合、当サイトに紹介料が発生することがあります(価格は変わりません)。":""}版の改訂により内容が異なる場合がありますので、購入前に販売ページで最新版をご確認ください。</p>
+    <p class="aff-note">${AFF?`${AFF_STORES}へのリンクは広告リンクです。リンク経由で購入された場合、当サイトに紹介料が発生することがあります(価格は変わりません)。`:""}版の改訂により内容が異なる場合がありますので、購入前に販売ページで最新版をご確認ください。</p>
   </div>` : "";
   const sc = SUBJ[b.sub] ? SUBJ[b.sub].color : "#3D4657";
   document.getElementById("modalInner").innerHTML = `
