@@ -24,11 +24,12 @@ for (const s of SUBJECTS) {
     urls.push({ loc: `${ORIGIN}/${s.dir}/books/`, priority: '0.8', changefreq: 'weekly' });
   }
 
-  const routeIndex = path.join(ROOT, s.dir, 'routes', 'index.html');
-  if (fs.existsSync(routeIndex)) {
-    urls.push({ loc: `${ORIGIN}/${s.dir}/routes/`, priority: '0.8', changefreq: 'weekly' });
+  for (const [sub, priority] of [['guides', '0.8'], ['routes', '0.8']]) {
+    if (fs.existsSync(path.join(ROOT, s.dir, sub, 'index.html'))) {
+      urls.push({ loc: `${ORIGIN}/${s.dir}/${sub}/`, priority, changefreq: 'weekly' });
+    }
   }
-  for (const [sub, priority] of [['routes', '0.7'], ['books', '0.6']]) {
+  for (const [sub, priority] of [['guides', '0.8'], ['routes', '0.7'], ['books', '0.6']]) {
     const dir = path.join(ROOT, s.dir, sub);
     if (!fs.existsSync(dir)) continue;
     const ids = fs.readdirSync(dir, { withFileTypes: true })
@@ -41,6 +42,19 @@ for (const s of SUBJECTS) {
         priority,
         changefreq: sub === 'routes' ? 'weekly' : 'monthly',
       });
+    }
+  }
+}
+
+// 科目に属さない記事（/guides/…）
+const rootGuides = path.join(ROOT, 'guides');
+if (fs.existsSync(path.join(rootGuides, 'index.html'))) {
+  urls.push({ loc: `${ORIGIN}/guides/`, priority: '0.8', changefreq: 'weekly' });
+}
+if (fs.existsSync(rootGuides)) {
+  for (const d of fs.readdirSync(rootGuides, { withFileTypes: true })) {
+    if (d.isDirectory() && fs.existsSync(path.join(rootGuides, d.name, 'index.html'))) {
+      urls.push({ loc: `${ORIGIN}/guides/${d.name}/`, priority: '0.8', changefreq: 'monthly' });
     }
   }
 }

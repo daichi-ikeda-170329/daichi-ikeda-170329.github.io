@@ -170,6 +170,15 @@ h2.sec{font-family:var(--serif);font-weight:800;font-size:24px;letter-spacing:.0
 .idx-grid svg{width:15px;height:15px;flex:none;margin-left:auto;color:var(--ic);transition:transform .16s}
 .idx-grid a:hover svg{transform:translateX(3px)}
 
+/* ---------- Guides ---------- */
+.gportal{display:grid;grid-template-columns:1fr;gap:9px;margin-top:22px}
+@media(min-width:700px){.gportal{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.gportal{grid-template-columns:repeat(3,1fr)}}
+.gportal a{display:block;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--gc);padding:15px 17px;transition:.16s;box-shadow:var(--sh-s)}
+.gportal a:hover{transform:translateY(-3px);box-shadow:var(--sh-m);border-color:var(--line-d);border-left-color:var(--gc)}
+.gportal b{display:block;font-family:var(--serif);font-weight:800;font-size:14.5px;letter-spacing:.02em;line-height:1.45}
+.gportal small{display:block;font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.7;font-weight:600}
+
 /* ---------- Feature ---------- */
 .feat-grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:22px;box-shadow:var(--sh-s)}
 @media(min-width:820px){.feat-grid{grid-template-columns:repeat(3,1fr)}}
@@ -258,7 +267,7 @@ h2.sec{font-family:var(--serif);font-weight:800;font-size:24px;letter-spacing:.0
       <a href="#subjects">科目から選ぶ</a>
       <a href="#routes">志望校から選ぶ</a>
       <a href="#catalog">参考書から探す</a>
-      <a href="#about">ルート大全とは</a>
+      <a href="#guides">選び方を読む</a>
       <a href="#faq">よくある質問</a>
       <span class="hdr-tag">2026 新課程対応</span>
     </nav>
@@ -486,6 +495,24 @@ h2.sec{font-family:var(--serif);font-weight:800;font-size:24px;letter-spacing:.0
         <h3>1冊目を決めて始める</h3>
         <p>出てきたルートの最初の1冊だけを決めれば十分です。図鑑で中身と難易度を確認して、書店やオンラインで手に取ってみてください。</p>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ GUIDES ============ -->
+  <section class="block" id="guides">
+    <div class="eyebrow">Guides</div>
+    <h2 class="sec">参考書の選び方を読む</h2>
+    <p class="sec-lead">「青チャートとFocus Goldは何が違うのか」「英単語帳はどれを選ぶべきか」——よく比較される参考書について、収録データの難易度・問題数・想定学習時間をもとに違いを整理した記事です。</p>
+    <div class="gportal">
+      <a href="/math/guides/moura-comparison/" style="--gc:#24427C"><b>網羅系はどれを選ぶか</b><small>白・黄・青・赤チャートとFocus Goldの違い</small></a>
+      <a href="/math/guides/enshu-comparison/" style="--gc:#24427C"><b>網羅系の次は何か</b><small>1対1対応・標準問題精講・プラチカの違い</small></a>
+      <a href="/english/guides/tango-comparison/" style="--gc:#B5432A"><b>英単語帳はどれを選ぶか</b><small>ターゲット1900・シス単・LEAP・鉄壁の違い</small></a>
+      <a href="/english/guides/bunpo-comparison/" style="--gc:#B5432A"><b>英文法はどれをやるか</b><small>Next Stage・Vintage・スクランブルと、その前にやる本</small></a>
+      <a href="/english/guides/kaishaku-comparison/" style="--gc:#B5432A"><b>英文解釈はなぜ必要か</b><small>入門70・基礎100・ポレポレの違いと進む順</small></a>
+      <a href="/japanese/guides/gendaibun-start/" style="--gc:#8A6D2F"><b>現代文は勉強できる</b><small>センスではなく手順で解くための参考書選び</small></a>
+      <a href="/science/guides/butsuri-route/" style="--gc:#2F6E4F"><b>物理の参考書はどう組むか</b><small>エッセンス・良問の風・名問の森と、その代替</small></a>
+      <a href="/social/guides/nihonshi-route/" style="--gc:#5B4E9E"><b>日本史はどう組むか</b><small>通史・用語・演習の3層と一問一答の使いどころ</small></a>
+      <a href="/guides/how-many-books/" style="--gc:#1B2233"><b>参考書は何冊やるべきか</b><small>買いすぎを防ぐ考え方</small></a>
     </div>
   </section>
 
