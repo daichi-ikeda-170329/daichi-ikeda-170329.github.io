@@ -214,7 +214,7 @@ ${head({ title, desc, url, ogImage: `${ORIGIN}/assets/ogp-${sub.dir}.png` })}
 .tier-head dt{font-size:10.5px;color:var(--muted);font-weight:700;letter-spacing:.05em}
 .tier-head dd{font-size:14px;color:var(--ink);font-weight:700;margin-top:5px;line-height:1.5}
 .tnav{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}
-.tnav a{background:var(--surface);border:1px solid var(--line);padding:8px 13px;font-size:12.5px;font-weight:700;color:var(--ink-2);transition:.15s;box-shadow:var(--sh-s)}
+.tnav a{background:var(--surface);border:1px solid var(--line);padding:10px 14px;font-size:12.5px;font-weight:700;color:var(--ink-2);transition:.15s;box-shadow:var(--sh-s)}
 .tnav a:hover{transform:translateY(-2px);box-shadow:var(--sh-m);border-color:var(--line-d)}
 .rpols{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:18px;box-shadow:var(--sh-s)}
 @media(min-width:900px){.rpols{flex-direction:row}}
@@ -228,18 +228,19 @@ ${head({ title, desc, url, ogImage: `${ORIGIN}/assets/ogp-${sub.dir}.png` })}
 .rstep__no{font-family:var(--mono);font-size:11px;color:var(--muted-2);font-weight:600;padding-top:3px;flex:none;width:20px}
 .rstep__body{min-width:0}
 .rstep__role{display:inline-block;font-size:10px;font-weight:700;color:#fff;background:var(--sc);padding:2px 7px;border-radius:2px;letter-spacing:.04em;margin-bottom:5px}
-.rstep__name{display:block;font-size:14.5px;font-weight:700;color:var(--ink);letter-spacing:.02em;line-height:1.45;text-decoration:underline;text-decoration-color:var(--line-d);text-underline-offset:3px;transition:.15s}
+/* 指でタップできる高さを確保する（当たり判定だけ広げ、見た目は変えない） */
+.rstep__name{display:block;font-size:14.5px;font-weight:700;color:var(--ink);letter-spacing:.02em;line-height:1.45;text-decoration:underline;text-decoration-color:var(--line-d);text-underline-offset:3px;transition:.15s;padding:4px 0}
 .rstep__name:hover{color:var(--accent-deep);text-decoration-color:var(--accent)}
 .rstep__meta{display:block;font-family:var(--mono);font-size:10.5px;color:var(--muted-2);margin-top:4px;letter-spacing:.03em}
 .rstep__note{font-size:12.5px;color:var(--ink-2);margin-top:7px;line-height:1.75}
 .rstep__alts{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.7}
-.rstep__alts a{color:var(--indigo);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+.rstep__alts a{color:var(--indigo);font-weight:700;text-decoration:underline;text-underline-offset:2px;padding:4px 0;display:inline-block}
 .rside{background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--gold);padding:18px 20px;margin-top:14px}
 .rside h3{font-family:var(--serif);font-weight:800;font-size:14.5px;letter-spacing:.03em;margin-bottom:7px}
 .rside p{font-size:12.5px;color:var(--muted);line-height:1.8}
 .rside ul{list-style:none;margin-top:11px;display:flex;flex-direction:column;gap:8px}
 .rside li{font-size:13px;line-height:1.7}
-.rside li a{font-weight:700;color:var(--indigo);text-decoration:underline;text-underline-offset:2px}
+.rside li a{font-weight:700;color:var(--indigo);text-decoration:underline;text-underline-offset:2px;padding:3px 0;display:inline-block}
 .rside li span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
 .unis{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
 .unis span{font-size:12px;font-weight:700;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);padding:6px 12px;box-shadow:var(--sh-s)}

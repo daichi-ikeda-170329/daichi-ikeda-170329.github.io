@@ -51,7 +51,13 @@ gtag('config', 'G-DQ5WFXEFMX');
 .toc li::before{content:counter(t,decimal-leading-zero);font-family:var(--mono);font-size:10.5px;color:var(--muted-2);padding-top:3px;font-weight:600}
 .toc a{color:var(--ink-2);font-weight:700;transition:.15s}
 .toc a:hover{color:var(--accent-deep)}
-.tbl-wrap{overflow-x:auto;margin:22px 0;border:1px solid var(--line);box-shadow:var(--sh-s);background:var(--surface)}
+/* 表は幅を超えたら中だけ横スクロールさせる。画面が狭いと「切れている」と
+   誤解されやすいので、スクロールできることを画面幅で出し分けて明示する。 */
+.tbl-scroll{margin:22px 0}
+.tbl-scroll__hint{display:none;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted-2);margin-bottom:7px;align-items:center;gap:7px}
+.tbl-scroll__hint::before{content:"";width:14px;height:1.5px;background:var(--line-d)}
+@media(max-width:860px){.tbl-scroll__hint{display:flex}}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);box-shadow:var(--sh-s);background:var(--surface);-webkit-overflow-scrolling:touch}
 table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:12.5px}
 table.cmp th,table.cmp td{padding:11px 13px;text-align:left;border-bottom:1px solid var(--line-2);vertical-align:top;line-height:1.65}
 table.cmp thead th{background:var(--surface-2);font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.04em;white-space:nowrap;border-bottom:1px solid var(--line)}
@@ -136,7 +142,9 @@ table.cmp td{color:var(--ink-2)}
     <section class="block prose" id="s2">
       <h2 class="sec">5冊を数字で比べる</h2>
       <p>チャート式は色でレベルが分かれています。やさしい順に白・黄・青・赤。Focus Gold は啓林館の網羅系で、青チャートと並んで進学校で採用されることが多い一冊です。まず数字で並べます。</p>
-      <div class="tbl-wrap">
+      <div class="tbl-scroll">
+        <div class="tbl-scroll__hint">横にスクロールできます</div>
+        <div class="tbl-wrap">
         <table class="cmp">
           <thead><tr><th>参考書</th><th>難易度</th><th>到達目安</th><th>問題数</th><th>想定時間</th><th>向いている人</th></tr></thead>
           <tbody>
@@ -147,6 +155,7 @@ table.cmp td{color:var(--ink-2)}
             <tr><th scope="row"><a href="/math/books/fg/">Focus Gold</a></th><td>6 / 10</td><td>50〜70</td><td>総問題 1000超/巻</td><td>各巻100〜120h</td><td>高1・高2から難関大を見据えて腰を据えたい人</td></tr>
           </tbody>
         </table>
+        </div>
       </div>
       <p>この表から読み取れることは 3 つあります。</p>
       <ul>
@@ -222,7 +231,9 @@ table.cmp td{color:var(--ink-2)}
       <h2 class="sec">網羅系を使わないという選択肢</h2>
       <p>高 3 の春以降から数学を立て直す場合、網羅系は時間的に成立しないことがあります。1 巻あたり 70〜110 時間、それが 3 巻分となると、他科目に割ける時間が残りません。</p>
       <p>その場合の現実的な代替が<a href="/math/books/kisomon/">基礎問題精講</a>です。</p>
-      <div class="tbl-wrap">
+      <div class="tbl-scroll">
+        <div class="tbl-scroll__hint">横にスクロールできます</div>
+        <div class="tbl-wrap">
         <table class="cmp">
           <thead><tr><th>参考書</th><th>難易度</th><th>到達目安</th><th>問題数</th><th>想定時間</th><th>向いている人</th></tr></thead>
           <tbody>
@@ -230,6 +241,7 @@ table.cmp td{color:var(--ink-2)}
             <tr><th scope="row"><a href="/math/books/ao/">青チャート</a></th><td>6 / 10</td><td>50〜67</td><td>総問題 約1100/巻</td><td>各巻90〜110h</td><td>難関大まで見据えて盤石な網羅をしたい人</td></tr>
           </tbody>
         </table>
+        </div>
       </div>
       <p>問題数が 3 分の 1 以下、想定時間も半分程度です。網羅性ではチャートに劣りますが、入試頻出パターンに絞ってあるため、限られた時間で全範囲を 1 周する目的には合っています。</p>
       <p>注意点として、基礎問題精講から上位の標準問題精講への難易度差は大きめです。あいだに演習を挟むか、志望校のレベルによっては別系統の演習書に移る判断が必要になります。</p>

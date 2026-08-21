@@ -99,7 +99,7 @@ h2.sec .cnt{font-family:var(--mono);font-size:12px;color:var(--muted);font-weigh
 h3.grp{font-family:var(--serif);font-weight:800;font-size:15px;letter-spacing:.04em;margin:24px 0 10px;display:flex;align-items:baseline;gap:10px;color:var(--ink-2)}
 h3.grp span{font-family:var(--mono);font-size:10.5px;color:var(--muted-2);font-weight:600}
 .stnav{display:flex;flex-wrap:wrap;gap:7px;margin-top:20px}
-.stnav a{display:inline-flex;align-items:baseline;gap:7px;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--nc);padding:8px 13px;font-size:12.5px;font-weight:700;color:var(--ink-2);transition:.15s;box-shadow:var(--sh-s)}
+.stnav a{display:inline-flex;align-items:baseline;gap:7px;background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--nc);padding:10px 14px;font-size:12.5px;font-weight:700;color:var(--ink-2);transition:.15s;box-shadow:var(--sh-s)}
 .stnav a:hover{transform:translateY(-2px);box-shadow:var(--sh-m)}
 .stnav a b{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:600}
 </style>

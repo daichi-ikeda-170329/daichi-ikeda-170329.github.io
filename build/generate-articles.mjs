@@ -63,13 +63,16 @@ function renderBlock(bl, dir) {
       '出版社': b.pub || '—',
       '形式': b.style || '—',
     })[c] ?? '—';
-    return `      <div class="tbl-wrap">
+    return `      <div class="tbl-scroll">
+        <div class="tbl-scroll__hint">横にスクロールできます</div>
+        <div class="tbl-wrap">
         <table class="cmp">
           <thead><tr><th>参考書</th>${cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead>
           <tbody>
 ${books.map(b => `            <tr><th scope="row">${bookLink(d, b.id)}</th>${cols.map(c => `<td>${esc(cell(b, c))}</td>`).join('')}</tr>`).join('\n')}
           </tbody>
         </table>
+        </div>
       </div>`;
   }
 
@@ -158,7 +161,13 @@ ${head({ title: a.title, desc: a.desc, url, ogImage: `${ORIGIN}/assets/ogp${sub 
 .toc li::before{content:counter(t,decimal-leading-zero);font-family:var(--mono);font-size:10.5px;color:var(--muted-2);padding-top:3px;font-weight:600}
 .toc a{color:var(--ink-2);font-weight:700;transition:.15s}
 .toc a:hover{color:var(--accent-deep)}
-.tbl-wrap{overflow-x:auto;margin:22px 0;border:1px solid var(--line);box-shadow:var(--sh-s);background:var(--surface)}
+/* 表は幅を超えたら中だけ横スクロールさせる。画面が狭いと「切れている」と
+   誤解されやすいので、スクロールできることを画面幅で出し分けて明示する。 */
+.tbl-scroll{margin:22px 0}
+.tbl-scroll__hint{display:none;font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted-2);margin-bottom:7px;align-items:center;gap:7px}
+.tbl-scroll__hint::before{content:"";width:14px;height:1.5px;background:var(--line-d)}
+@media(max-width:860px){.tbl-scroll__hint{display:flex}}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);box-shadow:var(--sh-s);background:var(--surface);-webkit-overflow-scrolling:touch}
 table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:12.5px}
 table.cmp th,table.cmp td{padding:11px 13px;text-align:left;border-bottom:1px solid var(--line-2);vertical-align:top;line-height:1.65}
 table.cmp thead th{background:var(--surface-2);font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.04em;white-space:nowrap;border-bottom:1px solid var(--line)}
