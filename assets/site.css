@@ -70,7 +70,7 @@ img{display:block;max-width:100%}
 .crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:2px 7px;font-size:11.5px;color:var(--muted);padding:14px 0 0;font-family:var(--mono);letter-spacing:.02em}
 /* 指でタップできる高さを確保する（WCAG のターゲットサイズは 24px 以上）。
    行の見た目を変えずに当たり判定だけ広げるため、padding で稼ぐ。 */
-.crumbs a{color:var(--muted);transition:.15s;padding:6px 0;display:inline-block}
+.crumbs a{color:var(--muted);transition:.15s;display:inline-flex;align-items:center;min-height:26px}
 .crumbs a:hover{color:var(--accent-deep)}
 .crumbs span.sep{color:var(--line-d)}
 .crumbs b{color:var(--ink-2);font-weight:600;font-family:var(--jp)}
@@ -209,7 +209,7 @@ h1.bk-name{font-family:var(--serif);font-weight:800;font-size:29px;line-height:1
 .fs-txt b{font-size:12px;font-weight:700;letter-spacing:.03em;color:var(--ink)}
 .fs-txt span{font-family:var(--mono);font-size:9.5px;color:var(--muted-2);letter-spacing:.05em;margin-top:2px}
 .foot-links{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin-top:22px}
-.foot-links a{font-size:12px;font-weight:700;color:var(--ink-2);transition:.15s}
+.foot-links a{font-size:12px;font-weight:700;color:var(--ink-2);transition:.15s;display:inline-flex;align-items:center;min-height:26px}
 .foot-links a:hover{color:var(--accent-deep)}
 .foot-legal{font-size:10.5px;color:var(--muted);line-height:1.85;text-align:center;max-width:70ch;margin:20px auto 0;padding-top:18px;border-top:1px solid var(--line)}
 .foot-legal b{color:var(--ink-2);font-weight:700}
