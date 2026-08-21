@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://daichi-ikeda-170329.github.io/sitemap.xml
