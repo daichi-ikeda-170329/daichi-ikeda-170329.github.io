@@ -152,7 +152,16 @@ function renderBook(book, ctx) {
   const affStores = [affAz ? 'Amazon' : null, affRk ? '楽天ブックス' : null].filter(Boolean).join('・');
 
   const fieldName = subLabel ? `${sub.ja}（${subLabel}）` : sub.ja;
-  const title = `${book.name}のレベルと使い方｜難易度・対象・次に進む本 - ${sub.full}`;
+
+  // 同じ書名の本が科目内に複数ある（日本史版と世界史版など）と title が衝突し、
+  // 検索結果で区別できなくなる。そのときだけ分野名を添えて一意にする。
+  const sameName = books.filter(b => b.name === book.name).length > 1;
+  const titleName = sameName && subLabel ? `${book.name}（${subLabel}）` : book.name;
+
+  // 書名が長い本は副題を削る。検索結果は全角 30 字ほどで切られるので、
+  // 副題を並べると書名の後ろが読めないまま尻切れになる。
+  const titleTail = titleName.length > 20 ? '｜レベルと使い方' : 'のレベルと使い方｜難易度・対象・次に進む本';
+  const title = `${titleName}${titleTail} - ${sub.full}`;
   const desc = clip(
     `${book.name}（${book.pub}）は${st.label}に位置づけられる${fieldName}の参考書。${dp.band}（難易度${book.diff}/10）、到達目安は${book.hensachi}。` +
     `${book.bestFor}に向いています。強みと注意点、同じレベルの他の選択肢、次に進む参考書までまとめました。`, 158);
