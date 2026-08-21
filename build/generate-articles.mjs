@@ -156,10 +156,12 @@ ${head({ title: a.title, desc: a.desc, url, ogImage: `${ORIGIN}/assets/ogp${sub 
 .art-lead{font-size:15px;color:var(--ink-2);line-height:2;margin-top:20px;max-width:68ch}
 .toc{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--sc);padding:19px 22px;margin-top:26px;box-shadow:var(--sh-s)}
 .toc h2{font-family:var(--serif);font-weight:800;font-size:14px;letter-spacing:.05em;margin-bottom:11px}
-.toc ol{list-style:none;counter-reset:t;display:flex;flex-direction:column;gap:8px}
-.toc li{counter-increment:t;font-size:13px;line-height:1.6;display:flex;gap:10px}
-.toc li::before{content:counter(t,decimal-leading-zero);font-family:var(--mono);font-size:10.5px;color:var(--muted-2);padding-top:3px;font-weight:600}
-.toc a{color:var(--ink-2);font-weight:700;transition:.15s}
+.toc ol{list-style:none;counter-reset:t;display:flex;flex-direction:column;gap:2px}
+.toc li{counter-increment:t;font-size:13px;line-height:1.6;display:flex;gap:10px;align-items:center}
+.toc li::before{content:counter(t,decimal-leading-zero);font-family:var(--mono);font-size:10.5px;color:var(--muted-2);font-weight:600}
+/* タップ領域を 24px 以上にする（WCAG のターゲットサイズ）。
+   gap を詰めたぶんを min-height で取り、行の見た目は変えない。 */
+.toc a{color:var(--ink-2);font-weight:700;transition:.15s;display:inline-flex;align-items:center;min-height:26px}
 .toc a:hover{color:var(--accent-deep)}
 /* 表は幅を超えたら中だけ横スクロールさせる。画面が狭いと「切れている」と
    誤解されやすいので、スクロールできることを画面幅で出し分けて明示する。 */
