@@ -169,11 +169,15 @@ git push
 
 ## 外部サービスの登録状況
 
-| サービス | 状態 | 用途 |
-|---|---|---|
-| GitHub Pages | 有効 | ホスティング |
-| Amazon アソシエイト | 未登録 | 書籍リンクの収益化 |
-| 楽天アフィリエイト | 未登録 | 書籍リンクの収益化 |
-| Google Search Console | 未登録 | インデックス登録・検索順位の把握 |
-| Google Analytics | 未導入 | アクセス解析 |
-| Bing Webmaster Tools | 未登録 | Bing / DuckDuckGo 向けインデックス |
+| サービス | 状態 | 用途 | 設定箇所 |
+|---|---|---|---|
+| GitHub Pages | 有効 | ホスティング | — |
+| Google Search Console | 所有権確認メタ設置済み | インデックス登録・検索順位の把握 | ポータルと科目トップの `<head>` |
+| Google アナリティクス 4 | 導入済み（`G-DQ5WFXEFMX`） | アクセス解析 | 手書き HTML 7 件と `build/lib/parts.mjs` の `analytics()` |
+| 楽天アフィリエイト | 導入済み | 書籍リンクの収益化 | 科目トップの `CONFIG.rakutenId` |
+| Amazon アソシエイト | 未登録 | 書籍リンクの収益化 | 科目トップの `CONFIG.amazonTag` |
+| Bing Webmaster Tools | 未登録 | Bing / DuckDuckGo 向けインデックス | — |
+
+アフィリエイト ID が 1 つでも設定されていると、PR バー・広告注記・法定表記・`rel="sponsored"` が自動で表示される。すべて未設定なら表示されない（未参加の状態で参加者の表記を出さないため）。判定は `build/lib/extract.mjs` の `affiliateEnabled()` と、科目トップ内の `AFF` が担う。
+
+測定 ID を変えるときは、手書き HTML と `parts.mjs` の両方にあるので `rg G-DQ5WFXEFMX` で全箇所を出してから直す。

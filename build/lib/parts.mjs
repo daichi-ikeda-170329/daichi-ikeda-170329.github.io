@@ -1,7 +1,16 @@
 /**
  * 生成ページで共有する HTML パーツ（head・ヘッダー・フッター）。
  */
-import { SUBJECTS, ORIGIN, esc } from './extract.mjs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { SUBJECTS, ORIGIN, esc, affiliateEnabled } from './extract.mjs';
+
+/**
+ * アフィリエイト ID が設定されているか。未設定のうちは広告表記を出さない
+ * （未参加の状態で参加者の表記を出さないため）。ID を入れて再生成すれば戻る。
+ */
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const AFF = affiliateEnabled(ROOT);
 
 /**
  * <head> の共通部分。
@@ -36,17 +45,36 @@ export function head(o) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://images-fe.ssl-images-amazon.com">
 <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Shippori+Mincho+B1:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/site.css">`;
+<link rel="stylesheet" href="/assets/site.css">
+${analytics()}`;
 }
 
-/** アフィリエイト表示バー + 科目切り替えバー */
+/**
+ * Google アナリティクス 4。
+ * 手書き HTML（ポータル・科目トップ・404）にも同じ測定 ID を直接書いてある。
+ * ID を変えるときは `rg G-DQ5WFXEFMX` で全箇所を出してから直す。
+ */
+export function analytics() {
+  const id = 'G-DQ5WFXEFMX';
+  return `<!-- Google アナリティクス 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=${id}"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${id}');
+</` + `script>`;
+}
+
+/** 広告表示バー（ID 設定時のみ）+ 科目切り替えバー */
 export function topBars(curDir) {
   const links = SUBJECTS.map(s =>
     `      <a class="xl" href="/${s.dir}/"${s.dir === curDir ? ' aria-current="page"' : ''}>${s.ja}</a>`
   ).join('\n');
-  return `<div class="pr-bar">当サイトは<b>アフィリエイト広告</b>を利用しています。参考書の紹介リンクから購入された場合、当サイトに紹介料が発生することがあります。</div>
-
-<nav class="xbar" aria-label="科目切り替え">
+  const pr = AFF
+    ? `<div class="pr-bar">当サイトは<b>アフィリエイト広告</b>を利用しています。参考書の紹介リンクから購入された場合、当サイトに紹介料が発生することがあります。</div>\n\n`
+    : '';
+  return `${pr}<nav class="xbar" aria-label="科目切り替え">
   <div class="xbar__in">
     <a class="xbar__brand" href="/">
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -110,7 +138,7 @@ ${curDir ? `      <a href="/${curDir}/">参考書図鑑</a>
     </div>
     <div class="foot-legal">
       <b>ルート大全</b> — 大学受験 参考書ルート&amp;図鑑<br>
-      当サイトはアフィリエイト広告を利用しています。掲載している難易度・到達偏差値・想定学習時間は公開情報にもとづく目安であり、学習成果を保証するものではありません。書影は Amazon 等が提供する商品画像 URL を参照して表示しています。<br>
+      ${AFF ? '当サイトはアフィリエイト広告を利用しています。' : ''}掲載している難易度・到達偏差値・想定学習時間は公開情報にもとづく目安であり、学習成果を保証するものではありません。書影は Amazon 等が提供する商品画像 URL を参照して表示しています。<br>
       &copy; ${new Date().getFullYear()} ルート大全 編集部
     </div>
   </div>

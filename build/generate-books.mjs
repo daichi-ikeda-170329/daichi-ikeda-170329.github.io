@@ -101,10 +101,16 @@ function amazonUrl(b, tag) {
   return base + (key ? `?tag=${tag}` : `&tag=${tag}`);
 }
 
+/**
+ * 楽天アフィリエイトのリンク。科目トップの rakutenURL() と同じ形にそろえる。
+ * 遷移先は最後に一度だけエンコードする（内側でもエンコードすると二重になり、
+ * 楽天側で検索語が復元できずヒットしなくなる）。
+ */
 function rakutenUrl(b, id) {
   if (!id) return '';
-  const q = encodeURIComponent(b.official || b.name);
-  return `https://hb.afl.rakuten.co.jp/hgc/${id}/?pc=${encodeURIComponent(`https://books.rakuten.co.jp/search?sitem=${q}`)}`;
+  const dest = `https://search.rakuten.co.jp/search/mall/${b.isbn13 || b.name}/`;
+  const e = encodeURIComponent(dest);
+  return `https://hb.afl.rakuten.co.jp/hgc/${id}/?pc=${e}&m=${e}`;
 }
 
 /* ============================================================
@@ -136,6 +142,9 @@ function renderBook(book, ctx) {
   const cover = coverUrl(book);
   const az = amazonUrl(book, config.amazonTag);
   const rk = rakutenUrl(book, config.rakutenId);
+  // ID 未設定のうちは通常リンク。広告表記も rel="sponsored" も付けない
+  const aff = Boolean(config.amazonTag || config.rakutenId);
+  const relBuy = aff ? 'nofollow sponsored noopener' : 'nofollow noopener';
 
   const fieldName = subLabel ? `${sub.ja}（${subLabel}）` : sub.ja;
   const title = `${book.name}のレベルと使い方｜難易度・対象・次に進む本 - ${sub.full}`;
@@ -293,16 +302,16 @@ ${next.list.map(b => bookCard(b, sub, stages)).join('\n')}
       <div class="eyebrow">Where to buy</div>
       <h2 class="sec">購入する</h2>
       <div class="buy">
-        <a class="az" href="${esc(az)}" target="_blank" rel="nofollow sponsored noopener">
+        <a class="az" href="${esc(az)}" target="_blank" rel="${relBuy}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 4h5v16H6a1 1 0 0 1-1-1V4Zm9 0h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4V4Z" stroke-width="1.9" stroke-linejoin="round"/></svg>
           Amazon で見る
         </a>
-        ${rk ? `<a class="rk" href="${esc(rk)}" target="_blank" rel="nofollow sponsored noopener">
+        ${rk ? `<a class="rk" href="${esc(rk)}" target="_blank" rel="${relBuy}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 4h5v16H6a1 1 0 0 1-1-1V4Zm9 0h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4V4Z" stroke-width="1.9" stroke-linejoin="round"/></svg>
           楽天ブックスで見る
         </a>` : ''}
       </div>
-      <p class="buy__note">上記は広告リンクです。リンク経由で購入された場合、当サイトに紹介料が発生することがあります。紹介料の有無によって掲載順や評価を変えることはありません。価格と在庫は変動するため、購入時は販売サイトの表示をご確認ください。改訂版が出ている場合があります。版を確認してから購入してください。</p>
+      <p class="buy__note">${aff ? '上記は広告リンクです。リンク経由で購入された場合、当サイトに紹介料が発生することがあります。紹介料の有無によって掲載順や評価を変えることはありません。' : ''}価格と在庫は変動するため、購入時は販売サイトの表示をご確認ください。改訂版が出ている場合があります。版を確認してから購入してください。</p>
     </section>
 
     <div class="cta">

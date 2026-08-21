@@ -61,7 +61,28 @@ export function extractSubject(rootDir, dir) {
     routes: ctx.ROUTES || {},
     unis: Array.isArray(ctx.UNIS) ? ctx.UNIS : [],
     guides: Array.isArray(ctx.GUIDES) ? ctx.GUIDES : [],
+    config: ctx.CONFIG || {},
   };
+}
+
+/**
+ * サイト全体でアフィリエイトを利用しているかを、各科目の CONFIG から判定する。
+ *
+ * 生成ページの広告表記はここを唯一の根拠にする。ID が未設定のうちは
+ * 「アフィリエイト広告を利用しています」と書かない（事実に反するため）。
+ * ID を入れて再生成すれば、必要な表記が自動で戻る。
+ * <script> を実行せずに済むよう、CONFIG の該当行だけを読む。
+ */
+let affCache = null;
+export function affiliateEnabled(rootDir) {
+  if (affCache !== null) return affCache;
+  affCache = SUBJECTS.some(s => {
+    const src = fs.readFileSync(path.join(rootDir, s.dir, 'index.html'), 'utf8');
+    const tag = src.match(/\bamazonTag:\s*"([^"]*)"/);
+    const rak = src.match(/\brakutenId:\s*"([^"]*)"/);
+    return Boolean((tag && tag[1]) || (rak && rak[1]));
+  });
+  return affCache;
 }
 
 /** サイト共通の科目メタ情報。冊数は BOOKS から実測するのでここには持たない */

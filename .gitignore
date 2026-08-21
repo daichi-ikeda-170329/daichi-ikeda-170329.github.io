@@ -2,3 +2,6 @@
 **/.DS_Store
 Thumbs.db
 node_modules/
+
+# ローカル開発用（プレビューサーバー設定）
+.claude/
