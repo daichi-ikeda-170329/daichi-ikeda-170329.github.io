@@ -431,6 +431,9 @@ h2.sec{font-family:var(--serif);font-weight:800;font-size:24px;letter-spacing:.0
 .opt-panel__title svg{width:17px;height:17px;color:var(--accent)}
 .opt-panel__sub{font-size:12px;color:var(--muted);margin-bottom:16px}
 .opt-fields{display:grid;grid-template-columns:1fr;gap:14px}
+/* 2 列で並べたい箇所に付ける。狭い画面では中身が枠を超えるので 1 列に落とす。 */
+.opt-fields.two{grid-template-columns:1fr}
+@media(min-width:560px){.opt-fields.two{grid-template-columns:1fr 1fr}}
 @media(min-width:760px){.opt-fields{grid-template-columns:repeat(3,1fr)}}
 .opt-field > label{font-size:11.5px;font-weight:700;color:var(--ink-2);margin-bottom:7px;display:block;letter-spacing:.03em}
 .seg-ctrl{display:flex;gap:4px;background:var(--surface-3);padding:4px;border-radius:7px}
@@ -787,7 +790,7 @@ gtag('config', 'G-DQ5WFXEFMX');
       <div class="opt-panel" id="optPanel">
         <div class="opt-panel__title"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M8 10v4M16 16v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>個別最適化</div>
         <div class="opt-panel__sub">あなたの条件に合わせてルートを組み替えます</div>
-        <div class="opt-fields" style="grid-template-columns:1fr 1fr">
+        <div class="opt-fields two">
           <div class="opt-field">
             <label>学習方針</label>
             <div class="seg-ctrl" id="segPolicy">
