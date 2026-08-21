@@ -48,6 +48,8 @@
   --r-s:8px; --r-m:14px; --r-l:20px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+/* 動きを減らす設定にしている利用者には、遷移とアニメーションを無効にする */
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
 html{-webkit-text-size-adjust:100%}
 body{
   font-family:var(--jp);background:var(--paper);color:var(--ink);
@@ -633,7 +635,7 @@ gtag('config', 'G-DQ5WFXEFMX');
 </nav>
 <header class="app-header">
   <div class="app-header__in">
-    <div class="logo" onclick="go('home')">
+    <div class="logo" role="button" tabindex="0" onclick="go('home')">
       <div class="logo__mark">社</div>
       <div class="logo__txt"><b>社会ルート大全</b><span>SHAKAI ROUTE COMPENDIUM</span></div>
     </div>
@@ -930,12 +932,12 @@ gtag('config', 'G-DQ5WFXEFMX');
 
 <!-- Legal modal -->
 <div class="modal-overlay" id="legalModal" onclick="if(event.target===this)closeLegal()">
-  <div class="modal" id="legalInner"></div>
+  <div class="modal" id="legalInner" role="dialog" aria-modal="true" aria-label="サイト情報"></div>
 </div>
 
 <!-- Book detail modal -->
 <div class="modal-overlay" id="bookModal" onclick="if(event.target===this)closeModal()">
-  <div class="modal" id="modalInner"></div>
+  <div class="modal" id="modalInner" role="dialog" aria-modal="true" aria-label="参考書の詳細"></div>
 </div>
 
 <!-- Bottom tabbar -->
@@ -3865,7 +3867,7 @@ function renderCatalog(){
     const st = STAGES[b.stage];
     const sc = SUBJ[b.sub] ? SUBJ[b.sub].color : "#3D4657";
     const dots = Array.from({length:10},(_,i)=>`<i style="${i<b.diff?`background:${diffColor(b.diff)}`:""}"></i>`).join("");
-    return `<div class="book-card" onclick="openModal('${b.id}')">
+    return `<div class="book-card" role="button" tabindex="0" onclick="openModal('${b.id}')">
       <div class="book-card__cover">${coverHTML(b)}</div>
       <div class="book-card__body">
         <div class="bc-name">${b.name}</div>
@@ -3959,10 +3961,12 @@ function openModal(id){
       ${amazon}
     </div>`;
   document.getElementById("bookModal").classList.add("open");
+  modalOpened("modalInner");
   document.body.style.overflow="hidden";
 }
 function closeModal(){
   document.getElementById("bookModal").classList.remove("open");
+  modalClosed();
   document.body.style.overflow="";
 }
 
@@ -4292,7 +4296,7 @@ function renderHome(){
     const seqs = SUBJ_KEYS.map(k=>(ROUTES[t.id][k]&&ROUTES[t.id][k].omni)||[]);
     const total = seqs.reduce((a,s)=>a+s.length,0);
     const dots = SUBJ_KEYS.map(k=>`<span class="rp-dot" style="background:${SUBJ[k].color}"></span><span class="rp-line"></span>`).join("").replace(/<span class="rp-line"><\/span>$/,"");
-    return `<div class="rp-card" style="--tc:${t.color}" onclick="selectTier('${t.id}');go('route')">
+    return `<div class="rp-card" style="--tc:${t.color}" role="button" tabindex="0" onclick="selectTier('${t.id}');go('route')">
       <div class="rp-card__no"><span>ROUTE ${t.no}</span><em>${total} STEPS</em></div>
       <h4>${t.name}</h4><p>${t.sub} — ${t.goal}</p>
       <div class="rp-mini">${dots}<span class="rp-arrow">→</span></div>
@@ -4434,10 +4438,12 @@ function openLegal(key){
     </div>
     <div class="legal-body">${L.body()}</div>`;
   document.getElementById("legalModal").classList.add("open");
+  modalOpened("legalInner");
   document.body.style.overflow="hidden";
 }
 function closeLegal(){
   document.getElementById("legalModal").classList.remove("open");
+  modalClosed();
   document.body.style.overflow="";
 }
 function renderFooter(){
@@ -4451,7 +4457,53 @@ function renderFooter(){
 /* ============================================================
    INIT
    ============================================================ */
-document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closeModal(); closeLegal(); } });
+/* role="button" を付けた div を、Enter と Space でも押せるようにする。
+   ネイティブの button と違い、div はキー操作でクリックが発火しない。 */
+document.addEventListener("keydown", e => {
+  if(e.key !== "Enter" && e.key !== " ") return;
+  const el = e.target.closest('[role="button"][tabindex="0"]');
+  if(!el) return;
+  e.preventDefault();
+  el.click();
+});
+
+/* ---------- モーダルのフォーカス管理 ----------
+   開いたらモーダル内へフォーカスを移し、Tab の移動をモーダル内に閉じ込め、
+   閉じたら元いた要素へ戻す。キーボードだけで操作する人が背景の
+   リンクに迷い込まないようにするため。 */
+let lastFocused = null;
+function trapFocusables(box){
+  return [...box.querySelectorAll('a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])')]
+    .filter(el => el.offsetParent !== null);
+}
+function modalOpened(boxId){
+  lastFocused = document.activeElement;
+  const box = document.getElementById(boxId);
+  const f = trapFocusables(box);
+  (f[0] || box).focus({preventScroll:true});
+}
+function modalClosed(){
+  if(lastFocused && document.contains(lastFocused)) lastFocused.focus({preventScroll:true});
+  lastFocused = null;
+}
+function openBox(){
+  const el = document.getElementById("bookModal");
+  if(el && el.classList.contains("open")) return document.getElementById("modalInner");
+  const lg = document.getElementById("legalModal");
+  if(lg && lg.classList.contains("open")) return document.getElementById("legalInner");
+  return null;
+}
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){ closeModal(); closeLegal(); return; }
+  if(e.key!=="Tab") return;
+  const box = openBox();
+  if(!box) return;
+  const f = trapFocusables(box);
+  if(!f.length) return;
+  const first = f[0], last = f[f.length-1];
+  if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+});
 document.getElementById("book-search").addEventListener("input",()=>renderCatalog());
 const afterOpt = ()=>{ if(S.mode==="uni"&&S.uni) applyUni(); else { renderSubjBar(); renderVerdict(); renderRoute(); } };
 wireSeg("segPolicy","policy",afterOpt);

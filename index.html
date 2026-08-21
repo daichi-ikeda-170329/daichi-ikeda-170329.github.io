@@ -600,7 +600,7 @@ gtag('config', 'G-DQ5WFXEFMX');
 </footer>
 
 <div class="modal-overlay" id="legalModal" onclick="if(event.target===this)closeLegal()">
-  <div class="modal" id="legalInner"></div>
+  <div class="modal" id="legalInner" role="dialog" aria-modal="true" aria-label="サイト情報"></div>
 </div>
 
 <script>
@@ -682,12 +682,34 @@ function openLegal(key){
     <div class="legal-body">${L.body()}</div>`;
   document.getElementById("legalModal").classList.add("open");
   document.body.style.overflow = "hidden";
+  lastFocused = document.activeElement;
+  const f = trapFocusables(document.getElementById("legalInner"));
+  (f[0] || document.getElementById("legalInner")).focus({preventScroll:true});
 }
 function closeLegal(){
   document.getElementById("legalModal").classList.remove("open");
   document.body.style.overflow = "";
+  if(lastFocused && document.contains(lastFocused)) lastFocused.focus({preventScroll:true});
+  lastFocused = null;
 }
-document.addEventListener("keydown", e => { if(e.key === "Escape") closeLegal(); });
+/* モーダルのフォーカス管理。開いたらモーダル内へフォーカスを移し、
+   Tab の移動をモーダル内に閉じ込め、閉じたら元いた要素へ戻す。 */
+let lastFocused = null;
+function trapFocusables(box){
+  return [...box.querySelectorAll('a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])')]
+    .filter(el => el.offsetParent !== null);
+}
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape"){ closeLegal(); return; }
+  if(e.key !== "Tab") return;
+  const modal = document.getElementById("legalModal");
+  if(!modal.classList.contains("open")) return;
+  const f = trapFocusables(document.getElementById("legalInner"));
+  if(!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+});
 
 document.getElementById("footLegal").innerHTML =
   `<b>${CONFIG.siteName}</b> — 大学受験 参考書ルート&図鑑<br>` +
