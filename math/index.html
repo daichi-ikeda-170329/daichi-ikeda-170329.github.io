@@ -278,8 +278,9 @@ h2.sec{font-family:var(--serif);font-weight:800;font-size:24px;letter-spacing:.0
 .opt{display:flex;align-items:center;gap:14px;padding:16px 18px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);transition:.15s;text-align:left;box-shadow:var(--sh-s);width:100%}
 .opt:hover{border-color:var(--indigo);transform:translateX(3px)}
 .opt.sel{border-color:var(--indigo);background:var(--indigo-soft)}
+/* 診断結果の書籍リストで、通し番号や科目バッジを入れる枠。
+   設問の選択肢からは汎用の線画アイコンを外したので、ここだけで使う。 */
 .opt__ic{width:42px;height:42px;border-radius:8px;flex:none;display:grid;place-items:center;background:var(--surface-3);color:var(--ink-2)}
-.opt.sel .opt__ic{background:#fff;color:var(--indigo)}
 .opt__txt{min-width:0}
 .opt__txt b{font-weight:800;font-size:15px;display:block;line-height:1.35}
 .opt__txt span{font-size:12px;color:var(--muted);display:block;margin-top:2px}
@@ -2902,7 +2903,6 @@ function renderQuiz(){
       <div class="quiz-sub">${q.sub}</div>
       <div class="opt-list">${q.opts.map(o=>`
         <button class="opt${quizState.ans[q.key]===o.v?" sel":""}" onclick="pickOpt('${q.key}','${o.v}')">
-          <span class="opt__ic"><svg width="21" height="21" viewBox="0 0 24 24" fill="none"><path d="${o.ic}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           <span class="opt__txt"><b>${o.b}</b><span>${o.s}</span></span>
           <span class="opt__check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></span>
         </button>`).join("")}
