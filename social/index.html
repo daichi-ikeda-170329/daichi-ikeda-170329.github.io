@@ -33,11 +33,11 @@
 <style>
 :root{
   --paper:#F6F4EF; --surface:#FFFFFF; --surface-2:#FAF9F6; --surface-3:#F1EFE8;
-  --ink:#1B2233; --ink-2:#39415A; --muted:#6D7386; --muted-2:#9BA0AF;
+  --ink:#1B2233; --ink-2:#39415A; --muted:#585E70; --muted-2:#6A6F82;
   --line:#E4E1D6; --line-2:#EDEBE2; --line-d:#CFCBBE;
   --indigo:#24427C; --indigo-deep:#18305E; --indigo-soft:#E8EDF7;
   --accent:#B5432A; --accent-deep:#93331F; --accent-soft:#F7E9E5;
-  --gold:#8A6D2F; --gold-soft:#F3EDDD;
+  --gold:#886C2E; --gold-soft:#F3EDDD;
   --ok:#2F6E4F; --ok-soft:#E7F0EA;
   --jp:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",Meiryo,"Noto Sans JP",sans-serif;
   --serif:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
@@ -199,10 +199,14 @@ h2.sec{font-family:var(--serif);font-weight:800;font-size:24px;letter-spacing:.0
 .bcov img.hide{display:none}
 .bcov .bcov-fb{position:absolute;inset:0;display:none;flex-direction:column;padding:10px 9px 9px 12px;color:#fff;border-radius:3px 6px 6px 3px;overflow:hidden;box-shadow:0 7px 14px rgba(27,34,51,.22)}
 .bcov.fb .bcov-fb{display:flex}
-.bcov .bcov-fb::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:rgba(0,0,0,.16)}
-.bcov .bcov-fb::after{content:"";position:absolute;left:5px;top:0;bottom:0;width:1.5px;background:rgba(255,255,255,.2)}
+.bcov .bcov-fb .fb-spine{position:absolute;left:0;top:0;bottom:0;width:5px;background:rgba(0,0,0,.16);z-index:1}
+.bcov .bcov-fb::after{content:"";position:absolute;left:5px;top:0;bottom:0;width:1.5px;background:rgba(255,255,255,.2);z-index:1}
+/* 表紙の色を模した背景は明るいものも暗いものもあるため、文字が乗る下半分に
+   影を敷いてコントラストを確保する。白文字のときだけ効かせる。 */
+.bcov .bcov-fb:not(.light)::before{content:"";position:absolute;left:0;right:0;bottom:0;top:auto;width:auto;height:72%;background:linear-gradient(to bottom,rgba(20,24,34,0),rgba(20,24,34,.62))}
+.bcov .bcov-fb>*{position:relative;z-index:2}
 .fb-pub{font-size:6.5px;font-weight:700;letter-spacing:.08em;opacity:.85;font-family:var(--mono);text-transform:uppercase}
-.fb-title{font-family:var(--serif);font-weight:800;font-size:12.5px;line-height:1.25;margin-top:auto;letter-spacing:0;word-break:break-word;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+.fb-title{font-family:var(--serif);font-weight:800;font-size:12.5px;line-height:1.25;margin-top:auto;letter-spacing:0;word-break:break-word;text-shadow:0 1px 3px rgba(0,0,0,.5)}
 .fb-title.long{font-size:10.5px}
 .fb-title.xlong{font-size:9px}
 .fb-band{margin-top:6px;font-family:var(--mono);font-size:6.5px;font-weight:600;letter-spacing:.04em;padding:2px 5px;border-radius:2px;align-self:flex-start;background:rgba(255,255,255,.22)}
@@ -3808,7 +3812,7 @@ function coverHTML(b){
   const n = b.name.length;
   const cls = n>14 ? "xlong" : (n>9 ? "long" : "");
   const fbStyle = `background:${b.fb.bg}${b.fb.light ? ";color:#1B2233;text-shadow:none" : ""}`;
-  const fb = `<div class="bcov-fb" style="${fbStyle}"><span class="fb-pub">${b.pub}</span><span class="fb-title ${cls}">${b.name}</span><span class="fb-band">${b.subjects}</span></div>`;
+  const fb = `<div class="bcov-fb${b.fb.light ? " light" : ""}" style="${fbStyle}"><span class="fb-spine"></span><span class="fb-pub">${b.pub}</span><span class="fb-title ${cls}">${b.name}</span><span class="fb-band">${b.subjects}</span></div>`;
   const srcs = coverSrcs(b);
   if(!srcs.length) return `<div class="bcov fb">${fb}</div>`;
   const esc = u => u.replace(/&/g,"&amp;").replace(/"/g,"&quot;");
