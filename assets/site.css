@@ -94,7 +94,10 @@ h2.sec{font-family:var(--serif);font-weight:800;font-size:21px;letter-spacing:.0
 @media(min-width:760px){.bk-hero{grid-template-columns:186px minmax(0,1fr);gap:32px}}
 .bk-cover{width:150px;justify-self:start;aspect-ratio:5/7;border-radius:3px;box-shadow:var(--sh-l);background:var(--surface-3);position:relative;overflow:hidden}
 @media(min-width:760px){.bk-cover{width:186px}}
-.bk-cover img{width:100%;height:100%;object-fit:cover}
+/* 書影は絶対配置でプレースホルダーの上に重ねる。読み込めなかったときは
+   onerror で img 自体が外れ、下のプレースホルダーが見える。
+   表紙の縦横比は本によって違うので contain で切らずに収める。 */
+.bk-cover img{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:contain;background:var(--surface-3)}
 .bk-cover .ph{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:16px 14px;color:#fff;background:var(--sc)}
 .bk-cover .ph b{font-family:var(--serif);font-size:15px;font-weight:800;line-height:1.45;letter-spacing:.03em}
 .bk-cover .ph span{font-family:var(--mono);font-size:9px;letter-spacing:.1em;opacity:.8}

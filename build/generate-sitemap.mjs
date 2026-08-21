@@ -24,14 +24,24 @@ for (const s of SUBJECTS) {
     urls.push({ loc: `${ORIGIN}/${s.dir}/books/`, priority: '0.8', changefreq: 'weekly' });
   }
 
-  const booksDir = path.join(ROOT, s.dir, 'books');
-  if (!fs.existsSync(booksDir)) continue;
-  const ids = fs.readdirSync(booksDir, { withFileTypes: true })
-    .filter(d => d.isDirectory() && fs.existsSync(path.join(booksDir, d.name, 'index.html')))
-    .map(d => d.name)
-    .sort();
-  for (const id of ids) {
-    urls.push({ loc: `${ORIGIN}/${s.dir}/books/${id}/`, priority: '0.6', changefreq: 'monthly' });
+  const routeIndex = path.join(ROOT, s.dir, 'routes', 'index.html');
+  if (fs.existsSync(routeIndex)) {
+    urls.push({ loc: `${ORIGIN}/${s.dir}/routes/`, priority: '0.8', changefreq: 'weekly' });
+  }
+  for (const [sub, priority] of [['routes', '0.7'], ['books', '0.6']]) {
+    const dir = path.join(ROOT, s.dir, sub);
+    if (!fs.existsSync(dir)) continue;
+    const ids = fs.readdirSync(dir, { withFileTypes: true })
+      .filter(d => d.isDirectory() && fs.existsSync(path.join(dir, d.name, 'index.html')))
+      .map(d => d.name)
+      .sort();
+    for (const id of ids) {
+      urls.push({
+        loc: `${ORIGIN}/${s.dir}/${sub}/${id}/`,
+        priority,
+        changefreq: sub === 'routes' ? 'weekly' : 'monthly',
+      });
+    }
   }
 }
 
