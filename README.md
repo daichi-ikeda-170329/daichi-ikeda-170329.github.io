@@ -19,15 +19,15 @@
 
 | 科目 | ディレクトリ | 収録冊数 | 志望レベル | 記事 | テーマカラー |
 |---|---|---|---|---|---|
-| 英語 | `english/` | 173 | 9 | 3 | `#B5432A` |
-| 国語 | `japanese/` | 152 | 8 | 1 | `#8A6D2F` |
+| 英語 | `english/` | 173 | 9 | 4 | `#B5432A` |
+| 国語 | `japanese/` | 152 | 8 | 2 | `#8A6D2F` |
 | 数学 | `math/` | 113 | 9 | 2 | `#24427C` |
-| 理科 | `science/` | 347 | 8 | 1 | `#2F6E4F` |
-| 社会 | `social/` | 267 | 8 | 1 | `#5B4E9E` |
+| 理科 | `science/` | 347 | 8 | 2 | `#2F6E4F` |
+| 社会 | `social/` | 267 | 8 | 2 | `#5B4E9E` |
 | 全科目共通 | `guides/` | — | — | 1 | — |
-| 合計 | — | 1,052 | 42 | 9 | — |
+| 合計 | — | 1,052 | 42 | 13 | — |
 
-公開ページ数は 1,125（`sitemap.xml` の URL 数と一致する）。冊数は各科目の `BOOKS` 配列（`BOOKS.push()` による追加分を含む）の要素数と一致する。
+公開ページ数は 1,129（`sitemap.xml` の URL 数と一致する）。冊数は各科目の `BOOKS` 配列（`BOOKS.push()` による追加分を含む）の要素数と一致する。
 
 ## ディレクトリ構成
 
@@ -65,7 +65,7 @@
 node build/generate-books.mjs      # 参考書の詳細ページ 1,052 件
 node build/generate-index.mjs      # 参考書一覧 5 件
 node build/generate-routes.mjs     # 志望校別ルート 47 件
-node build/generate-articles.mjs   # 解説記事 15 件
+node build/generate-articles.mjs   # 解説記事 19 件（記事 13 + 一覧 6）
 node build/generate-sitemap.mjs    # sitemap.xml（最後に実行する）
 ```
 
@@ -167,6 +167,19 @@ git push
 4. ポータル `index.html` の科目カードとヒーローの冊数
 5. `assets/ogp*.png`（冊数を画像内に焼き込んでいるため、`build/` 外の生成手順で作り直す）
 
+## インデックス通知
+
+ページを増やしたら、本番へ反映したあとに IndexNow へ通知する。Bing・Yahoo・DuckDuckGo・Yandex に即座に伝わる（Google は IndexNow 非対応なので、Search Console のサイトマップ送信が別に必要）。
+
+```bash
+node build/submit-indexnow.mjs --dry   # 送信内容の確認
+node build/submit-indexnow.mjs         # 送信
+```
+
+URL は `sitemap.xml` を正本にするので、先に `generate-sitemap.mjs` を流しておく。所有権はサイト直下の `<キー>.txt` で証明する。このファイルを消すと通知が通らなくなるので削除しない。
+
+初回送信時は `SiteVerificationNotCompleted` が返ることがある。キー検証が非同期のためで、数分待って再実行すれば通る。
+
 ## 外部サービスの登録状況
 
 | サービス | 状態 | 用途 | 設定箇所 |
@@ -176,7 +189,8 @@ git push
 | Google アナリティクス 4 | 導入済み（`G-DQ5WFXEFMX`） | アクセス解析 | 手書き HTML 7 件と `build/lib/parts.mjs` の `analytics()` |
 | 楽天アフィリエイト | 導入済み | 書籍リンクの収益化 | 科目トップの `CONFIG.rakutenId` |
 | Amazon アソシエイト | 未登録 | 書籍リンクの収益化 | 科目トップの `CONFIG.amazonTag` |
-| Bing Webmaster Tools | 未登録 | Bing / DuckDuckGo 向けインデックス | — |
+| IndexNow | 通知済み | Bing・Yahoo・DuckDuckGo・Yandex への即時インデックス通知 | サイト直下の `<キー>.txt` と `build/submit-indexnow.mjs` |
+| Bing Webmaster Tools | 未登録 | Bing の掲載状況の確認 | — |
 
 アフィリエイト ID が 1 つでも設定されていると、PR バー・広告注記・法定表記・`rel="sponsored"` が自動で表示される。すべて未設定なら表示されない（未参加の状態で参加者の表記を出さないため）。判定は `build/lib/extract.mjs` の `affiliateEnabled()` と、科目トップ内の `AFF` が担う。
 
