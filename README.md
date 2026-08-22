@@ -156,7 +156,7 @@ const CONFIG = {
 
 生成ページ側は `build/lib/extract.mjs` の `affiliateEnabled()` が 5 科目の `CONFIG` を読んで同じ判定をする。**ID を入れたあとは必ず全ページを再生成する。**
 
-### Amazon アソシエイトが承認されたら
+### Amazon アソシエイトに申請して承認されたら
 
 ```bash
 # 5 科目 + ポータルへ一括反映する（ID は自分のものに置き換える）
@@ -234,7 +234,7 @@ URL は `sitemap.xml` を正本にするので、先に `generate-sitemap.mjs` �
 | Google Search Console | 所有権確認メタ設置済み | インデックス登録・検索順位の把握 | ポータルと科目トップの `<head>` |
 | Google アナリティクス 4 | 導入済み（`G-DQ5WFXEFMX`） | アクセス解析 | 手書き HTML 7 件と `build/lib/parts.mjs` の `analytics()` |
 | 楽天アフィリエイト | 導入済み | 書籍リンクの収益化 | 科目トップとポータルの `CONFIG.rakutenId` |
-| Amazon アソシエイト | 審査中 | 書籍リンクの収益化 | 科目トップとポータルの `CONFIG.amazonTag` |
+| Amazon アソシエイト | **未申請** | 書籍リンクの収益化 | 科目トップとポータルの `CONFIG.amazonTag` |
 | IndexNow | 通知済み | Bing・Yahoo・DuckDuckGo・Yandex への即時インデックス通知 | サイト直下の `<キー>.txt` と `build/submit-indexnow.mjs` |
 | Bing Webmaster Tools | 未登録 | Bing の掲載状況の確認 | — |
 
