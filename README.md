@@ -2,7 +2,7 @@
 
 大学受験の参考書 1,052 冊を科目別に図鑑化し、志望校から逆算した参考書ルートを提示する無料サイト。
 
-公開 URL: https://daichi-ikeda-170329.github.io/
+公開 URL: https://route-taizen.com/
 
 ## 概要
 
@@ -206,11 +206,30 @@ URL は `sitemap.xml` を正本にするので、先に `generate-sitemap.mjs` �
 
 初回送信時は `SiteVerificationNotCompleted` が返ることがある。キー検証が非同期のためで、数分待って再実行すれば通る。
 
+## DNS の構成
+
+ドメインは Xserver で保有し、**権威 DNS は Cloudflare** に置いている。Xserver のネームサーバーは使わない。
+
+| 種別 | 名前 | 内容 |
+|---|---|---|
+| A | `@` | `185.199.108.153` / `.109.153` / `.110.153` / `.111.153` |
+| AAAA | `@` | `2606:50c0:8000::153` 〜 `8003::153` |
+| CNAME | `www` | `daichi-ikeda-170329.github.io` |
+| TXT | `_github-pages-challenge-daichi-ikeda-170329` | ドメイン所有権の確認用 |
+
+注意点が 3 つある。
+
+- **A / AAAA / CNAME は Cloudflare のプロキシを通さない**（グレーの雲＝DNS only）。オレンジにすると GitHub の証明書発行の確認が Cloudflare 止まりになり、HTTPS を有効化できない
+- `www` の CNAME の向き先は**リポジトリ名ではなくアカウントの Pages ホスト名**。リポジトリをリネームしても変えない
+- Cloudflare へ移す前は Xserver のネームサーバーを使っていたが、**GitHub のリゾルバから解決できず**、Pages のドメイン判定とアカウントのドメイン認証が揃って失敗した（`InvalidDNSError` / `Dnsruby::ServFail`）。公開リゾルバからは正常に引けていたため切り分けに時間がかかった。Cloudflare へ移した直後に解決したので、**Xserver のネームサーバーには戻さない**
+
 ## 外部サービスの登録状況
 
 | サービス | 状態 | 用途 | 設定箇所 |
 |---|---|---|---|
-| GitHub Pages | 有効 | ホスティング | — |
+| GitHub Pages | 有効 | ホスティング | リポジトリ直下の `CNAME`（`route-taizen.com`） |
+| 独自ドメイン | 有効（2026-08-22〜） | `route-taizen.com`。HTTPS 強制済み | Xserver で保有、DNS は Cloudflare |
+| Cloudflare DNS | 有効 | 権威 DNS。`darwin` / `yolanda`.ns.cloudflare.com | Cloudflare ダッシュボード |
 | Google Search Console | 所有権確認メタ設置済み | インデックス登録・検索順位の把握 | ポータルと科目トップの `<head>` |
 | Google アナリティクス 4 | 導入済み（`G-DQ5WFXEFMX`） | アクセス解析 | 手書き HTML 7 件と `build/lib/parts.mjs` の `analytics()` |
 | 楽天アフィリエイト | 導入済み | 書籍リンクの収益化 | 科目トップとポータルの `CONFIG.rakutenId` |

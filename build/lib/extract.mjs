@@ -99,7 +99,7 @@ export const SUBJECTS = [
     full: '社会ルート大全', fields: '日本史・世界史・地理・公民' },
 ];
 
-export const ORIGIN = 'https://daichi-ikeda-170329.github.io';
+export const ORIGIN = 'https://route-taizen.com';
 
 /** 分野コード（BOOKS[].sub）の表示名。科目をまたいで衝突しないので 1 つの辞書で足りる */
 export const SUB_LABELS = {

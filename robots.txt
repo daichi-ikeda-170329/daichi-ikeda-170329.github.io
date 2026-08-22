@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://daichi-ikeda-170329.github.io/sitemap.xml
+Sitemap: https://route-taizen.com/sitemap.xml
