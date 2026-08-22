@@ -3,6 +3,7 @@
 大学受験の参考書 1,052 冊を科目別に図鑑化し、志望校から逆算した参考書ルートを提示する無料サイト。
 
 公開 URL: https://route-taizen.com/
+リポジトリ: https://github.com/daichi-ikeda-170329/study-route-compendium
 
 ## 概要
 
